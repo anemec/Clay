@@ -2,80 +2,107 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Merchant RPG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Merchant RPG - Heroes & Quests</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>⚔️ Merchant RPG ⚔️</h1>
+    <div class="game-container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">Merchant RPG</h1>
             <div class="resources">
-                <span class="resource-item">💰 Gold: <span id="gold">100</span></span>
-                <span class="resource-item">📦 Inventory: <span id="inventory-count">0</span>/20</span>
+                <div class="resource">
+                    <span class="resource-icon">💰</span>
+                    <span class="resource-value" id="gold">100</span>
+                </div>
             </div>
         </header>
 
-        <div class="game-content">
-            <!-- Heroes Section -->
-            <section class="panel heroes-panel">
-                <h2>👥 Heroes</h2>
-                <div class="hero-hire">
-                    <select id="hero-class">
-                        <option value="warrior">Warrior (50g)</option>
-                        <option value="mage">Mage (50g)</option>
-                        <option value="rogue">Rogue (50g)</option>
-                        <option value="cleric">Cleric (75g)</option>
-                    </select>
-                    <button onclick="game.hireHero()">Hire Hero</button>
+        <!-- Tab Navigation -->
+        <nav class="tabs">
+            <button class="tab active" onclick="game.switchTab('heroes')">
+                <span class="tab-icon">⚔️</span>
+                <span class="tab-label">Heroes</span>
+            </button>
+            <button class="tab" onclick="game.switchTab('quests')">
+                <span class="tab-icon">🗺️</span>
+                <span class="tab-label">Quests</span>
+            </button>
+            <button class="tab" onclick="game.switchTab('materials')">
+                <span class="tab-icon">📦</span>
+                <span class="tab-label">Materials</span>
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Heroes Tab -->
+            <section id="heroes-tab" class="tab-content active">
+                <div class="panel">
+                    <h2 class="panel-title">Hire Hero</h2>
+                    <div class="hero-hire">
+                        <select id="hero-class-select" class="hero-select">
+                            <option value="0">Warrior - 100g</option>
+                            <option value="1">Rogue - 100g</option>
+                            <option value="2">Mage - 100g</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="game.hireHero()">Hire Hero</button>
+                    </div>
                 </div>
-                <div id="heroes-list" class="heroes-list"></div>
-            </section>
 
-            <!-- Quests Section -->
-            <section class="panel quests-panel">
-                <h2>🗺️ Quests</h2>
-                <div id="quests-list" class="quests-list"></div>
-            </section>
-
-            <!-- Crafters Section -->
-            <section class="panel crafters-panel">
-                <h2>🔨 Crafters</h2>
-                <div class="crafter-hire">
-                    <select id="crafter-type">
-                        <option value="blacksmith">Blacksmith (100g)</option>
-                        <option value="tailor">Tailor (100g)</option>
-                        <option value="alchemist">Alchemist (100g)</option>
-                    </select>
-                    <button onclick="game.hireCrafter()">Hire Crafter</button>
+                <div class="panel">
+                    <h2 class="panel-title">Your Heroes (<span id="hero-count">0</span>)</h2>
+                    <div id="heroes-list" class="heroes-list"></div>
                 </div>
-                <div id="crafters-list" class="crafters-list"></div>
             </section>
 
-            <!-- Inventory Section -->
-            <section class="panel inventory-panel">
-                <h2>🎒 Inventory</h2>
-                <div id="inventory-list" class="inventory-list"></div>
+            <!-- Quests Tab -->
+            <section id="quests-tab" class="tab-content">
+                <div class="panel">
+                    <h2 class="panel-title">Available Quests</h2>
+                    <div id="quests-list" class="quests-list"></div>
+                </div>
             </section>
 
-            <!-- Shop Section -->
-            <section class="panel shop-panel">
-                <h2>🏪 Shop</h2>
-                <p class="shop-info">Sell items from your inventory here!</p>
-                <div id="shop-list" class="shop-list"></div>
+            <!-- Materials Tab -->
+            <section id="materials-tab" class="tab-content">
+                <div class="panel">
+                    <h2 class="panel-title">Materials Inventory</h2>
+                    <div id="materials-list" class="materials-list"></div>
+                </div>
             </section>
+        </main>
 
-            <!-- Materials Section -->
-            <section class="panel materials-panel">
-                <h2>📦 Materials</h2>
-                <div id="materials-list" class="materials-list"></div>
-            </section>
-        </div>
-
-        <footer>
-            <button onclick="game.save()" class="save-btn">💾 Save Game</button>
-            <button onclick="game.reset()" class="reset-btn">🔄 Reset Game</button>
+        <!-- Footer -->
+        <footer class="footer">
+            <button class="btn btn-secondary" onclick="game.save()">💾 Save</button>
+            <button class="btn btn-secondary" onclick="game.reset()">🔄 Reset</button>
+            <div class="attribution">
+                Game data from <a href="https://github.com/Benzeliden/MerchantGameDB" target="_blank">MerchantGameDB</a>
+            </div>
         </footer>
+    </div>
+
+    <!-- Quest Modal -->
+    <div id="quest-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-quest-name">Quest Name</h3>
+                <button class="modal-close" onclick="game.closeQuestModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-quest-details"></div>
+                <div class="hero-selection">
+                    <label>Select Hero:</label>
+                    <select id="modal-hero-select" class="hero-select"></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="game.closeQuestModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="game.startQuest()">Start Quest</button>
+            </div>
+        </div>
     </div>
 
     <script src="game.js"></script>
