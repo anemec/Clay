@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merchant RPG</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚔️ Merchant RPG ⚔️</h1>
+            <div class="resources">
+                <span class="resource-item">💰 Gold: <span id="gold">100</span></span>
+                <span class="resource-item">📦 Inventory: <span id="inventory-count">0</span>/20</span>
+            </div>
+        </header>
+
+        <div class="game-content">
+            <!-- Heroes Section -->
+            <section class="panel heroes-panel">
+                <h2>👥 Heroes</h2>
+                <div class="hero-hire">
+                    <select id="hero-class">
+                        <option value="warrior">Warrior (50g)</option>
+                        <option value="mage">Mage (50g)</option>
+                        <option value="rogue">Rogue (50g)</option>
+                        <option value="cleric">Cleric (75g)</option>
+                    </select>
+                    <button onclick="game.hireHero()">Hire Hero</button>
+                </div>
+                <div id="heroes-list" class="heroes-list"></div>
+            </section>
+
+            <!-- Quests Section -->
+            <section class="panel quests-panel">
+                <h2>🗺️ Quests</h2>
+                <div id="quests-list" class="quests-list"></div>
+            </section>
+
+            <!-- Crafters Section -->
+            <section class="panel crafters-panel">
+                <h2>🔨 Crafters</h2>
+                <div class="crafter-hire">
+                    <select id="crafter-type">
+                        <option value="blacksmith">Blacksmith (100g)</option>
+                        <option value="tailor">Tailor (100g)</option>
+                        <option value="alchemist">Alchemist (100g)</option>
+                    </select>
+                    <button onclick="game.hireCrafter()">Hire Crafter</button>
+                </div>
+                <div id="crafters-list" class="crafters-list"></div>
+            </section>
+
+            <!-- Inventory Section -->
+            <section class="panel inventory-panel">
+                <h2>🎒 Inventory</h2>
+                <div id="inventory-list" class="inventory-list"></div>
+            </section>
+
+            <!-- Shop Section -->
+            <section class="panel shop-panel">
+                <h2>🏪 Shop</h2>
+                <p class="shop-info">Sell items from your inventory here!</p>
+                <div id="shop-list" class="shop-list"></div>
+            </section>
+
+            <!-- Materials Section -->
+            <section class="panel materials-panel">
+                <h2>📦 Materials</h2>
+                <div id="materials-list" class="materials-list"></div>
+            </section>
+        </div>
+
+        <footer>
+            <button onclick="game.save()" class="save-btn">💾 Save Game</button>
+            <button onclick="game.reset()" class="reset-btn">🔄 Reset Game</button>
+        </footer>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
