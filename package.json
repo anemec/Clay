@@ -1,0 +1,20 @@
+{
+  "name": "merchant-rpg",
+  "version": "1.0.0",
+  "description": "Browser-based idle RPG game inspired by Merchant RPG",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": ["game", "rpg", "idle", "merchant"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^1.0.0",
+    "@vitest/ui": "^1.0.0",
+    "happy-dom": "^12.10.3",
+    "vitest": "^1.0.0"
+  }
+}

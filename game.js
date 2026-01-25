@@ -2,7 +2,10 @@
 // Using data from MerchantGameDB: https://github.com/Benzeliden/MerchantGameDB
 
 class MerchantRPG {
-    constructor() {
+    constructor(options = {}) {
+        // Options for testing
+        this.skipInit = options.skipInit || false;
+
         // Hero templates from HeroList.json (first 3 basic classes)
         this.heroTemplates = [
             {
@@ -71,8 +74,12 @@ class MerchantRPG {
 
         this.load();
         this.updateGameState(); // Process any completed quests from offline time
-        this.render();
-        this.startGameLoop();
+
+        // Skip rendering and game loop in test environment
+        if (!this.skipInit) {
+            this.render();
+            this.startGameLoop();
+        }
     }
 
     // === Hero Management ===
@@ -220,10 +227,9 @@ class MerchantRPG {
     giveExp(hero, exp) {
         hero.exp += exp;
 
-        // Level up check
-        const expNeeded = this.getExpForLevel(hero.level);
-
-        while (hero.exp >= expNeeded) {
+        // Level up check - recalculate expNeeded each iteration
+        while (hero.exp >= this.getExpForLevel(hero.level)) {
+            const expNeeded = this.getExpForLevel(hero.level);
             hero.exp -= expNeeded;
             hero.level++;
 
@@ -446,8 +452,18 @@ class MerchantRPG {
     }
 }
 
-// Initialize game when page loads
+// Initialize game when page loads (browser only)
 let game;
-window.addEventListener('DOMContentLoaded', () => {
-    game = new MerchantRPG();
-});
+if (typeof window !== 'undefined') {
+    window.addEventListener('DOMContentLoaded', () => {
+        game = new MerchantRPG();
+    });
+}
+
+// Export for testing (Node.js/Vitest)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { MerchantRPG };
+}
+
+// ES6 export for modern environments
+export { MerchantRPG };
