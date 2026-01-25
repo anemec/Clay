@@ -434,10 +434,11 @@ class MerchantRPG {
     }
 
     renderHeroes() {
-        // Render hero class select dropdown
+        // Render hero class select dropdown (only if unlocked classes changed)
         const heroClassSelect = document.getElementById('hero-class-select');
         if (heroClassSelect) {
-            heroClassSelect.innerHTML = this.heroTemplates.map((template, index) => {
+            const currentOptions = heroClassSelect.innerHTML;
+            const newOptions = this.heroTemplates.map((template, index) => {
                 const isUnlocked = this.state.unlockedClasses.includes(index);
                 if (isUnlocked) {
                     return `<option value="${index}">${template.name} - ${template.cost}g</option>`;
@@ -445,6 +446,11 @@ class MerchantRPG {
                     return `<option value="${index}" disabled>🔒 ${template.name} - ${template.unlockReq}</option>`;
                 }
             }).join('');
+
+            // Only update if changed to avoid interrupting user interaction
+            if (currentOptions !== newOptions) {
+                heroClassSelect.innerHTML = newOptions;
+            }
         }
 
         // Render hero list
