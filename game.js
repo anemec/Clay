@@ -131,6 +131,7 @@ class MerchantRPG {
         };
 
         this.currentQuest = null; // For modal
+        this.lastUnlockedClasses = []; // Track for dropdown updates (empty to force initial render)
 
         this.load();
         this.updateGameState(); // Process any completed quests from offline time
@@ -434,22 +435,24 @@ class MerchantRPG {
     }
 
     renderHeroes() {
-        // Render hero class select dropdown (only if unlocked classes changed)
+        // Render hero class select dropdown (only when unlocked classes change)
         const heroClassSelect = document.getElementById('hero-class-select');
         if (heroClassSelect) {
-            const currentOptions = heroClassSelect.innerHTML;
-            const newOptions = this.heroTemplates.map((template, index) => {
-                const isUnlocked = this.state.unlockedClasses.includes(index);
-                if (isUnlocked) {
-                    return `<option value="${index}">${template.name} - ${template.cost}g</option>`;
-                } else {
-                    return `<option value="${index}" disabled>🔒 ${template.name} - ${template.unlockReq}</option>`;
-                }
-            }).join('');
+            // Check if unlocked classes changed
+            const unlocksChanged = JSON.stringify(this.state.unlockedClasses) !== JSON.stringify(this.lastUnlockedClasses);
 
-            // Only update if changed to avoid interrupting user interaction
-            if (currentOptions !== newOptions) {
-                heroClassSelect.innerHTML = newOptions;
+            if (unlocksChanged) {
+                heroClassSelect.innerHTML = this.heroTemplates.map((template, index) => {
+                    const isUnlocked = this.state.unlockedClasses.includes(index);
+                    if (isUnlocked) {
+                        return `<option value="${index}">${template.name} - ${template.cost}g</option>`;
+                    } else {
+                        return `<option value="${index}" disabled>🔒 ${template.name} - ${template.unlockReq}</option>`;
+                    }
+                }).join('');
+
+                // Update tracking variable
+                this.lastUnlockedClasses = [...this.state.unlockedClasses];
             }
         }
 
