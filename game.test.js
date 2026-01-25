@@ -42,20 +42,21 @@ describe('MerchantRPG - Game Initialization', () => {
         expect(game.state.nextHeroId).toBe(1);
     });
 
-    it('should have 9 hero templates', () => {
-        expect(game.heroTemplates).toHaveLength(9);
-        expect(game.heroTemplates[0].name).toBe('Warrior');
-        expect(game.heroTemplates[1].name).toBe('Rogue');
-        expect(game.heroTemplates[2].name).toBe('Mage');
-        expect(game.heroTemplates[3].name).toBe('Berserker');
-        expect(game.heroTemplates[4].name).toBe('Cleric');
-        expect(game.heroTemplates[5].name).toBe('Assassin');
+    it('should have 10 D&D hero templates', () => {
+        expect(game.heroTemplates).toHaveLength(10);
+        expect(game.heroTemplates[0].name).toBe('Fighter');
+        expect(game.heroTemplates[1].name).toBe('Wizard');
+        expect(game.heroTemplates[2].name).toBe('Rogue');
+        expect(game.heroTemplates[3].name).toBe('Cleric');
+        expect(game.heroTemplates[4].name).toBe('Ranger');
+        expect(game.heroTemplates[5].name).toBe('Barbarian');
         expect(game.heroTemplates[6].name).toBe('Paladin');
-        expect(game.heroTemplates[7].name).toBe('Dark Knight');
-        expect(game.heroTemplates[8].name).toBe('Bard');
+        expect(game.heroTemplates[7].name).toBe('Warlock');
+        expect(game.heroTemplates[8].name).toBe('Monk');
+        expect(game.heroTemplates[9].name).toBe('Bard');
     });
 
-    it('should start with 3 unlocked classes', () => {
+    it('should start with 3 unlocked classes (Fighter, Wizard, Rogue)', () => {
         expect(game.state.unlockedClasses).toEqual([0, 1, 2]);
     });
 
@@ -73,7 +74,7 @@ describe('MerchantRPG - Hero Management', () => {
         game = new MerchantRPG({ skipInit: true });
     });
 
-    it('should hire a warrior hero', () => {
+    it('should hire a fighter hero', () => {
         const initialGold = game.state.gold;
 
         // Mock the select element
@@ -88,15 +89,15 @@ describe('MerchantRPG - Hero Management', () => {
 
         expect(game.state.heroes).toHaveLength(1);
         expect(game.state.heroes[0].classIndex).toBe(0);
-        expect(game.state.heroes[0].name).toBe('Warrior #1');
+        expect(game.state.heroes[0].name).toBe('Fighter #1');
         expect(game.state.heroes[0].level).toBe(1);
         expect(game.state.heroes[0].hp).toBe(100);
-        expect(game.state.heroes[0].atk).toBe(5);
-        expect(game.state.heroes[0].def).toBe(14);
+        expect(game.state.heroes[0].atk).toBe(6);
+        expect(game.state.heroes[0].def).toBe(12);
         expect(game.state.gold).toBe(initialGold - 100);
     });
 
-    it('should hire a rogue hero', () => {
+    it('should hire a wizard hero', () => {
         global.document.getElementById = vi.fn((id) => {
             if (id === 'hero-class-select') {
                 return { value: '1' };
@@ -107,13 +108,13 @@ describe('MerchantRPG - Hero Management', () => {
         game.hireHero();
 
         expect(game.state.heroes[0].classIndex).toBe(1);
-        expect(game.state.heroes[0].name).toBe('Rogue #1');
-        expect(game.state.heroes[0].hp).toBe(90);
-        expect(game.state.heroes[0].atk).toBe(5);
-        expect(game.state.heroes[0].def).toBe(9);
+        expect(game.state.heroes[0].name).toBe('Wizard #1');
+        expect(game.state.heroes[0].hp).toBe(70);
+        expect(game.state.heroes[0].atk).toBe(2);
+        expect(game.state.heroes[0].def).toBe(6);
     });
 
-    it('should hire a mage hero', () => {
+    it('should hire a rogue hero', () => {
         global.document.getElementById = vi.fn((id) => {
             if (id === 'hero-class-select') {
                 return { value: '2' };
@@ -124,10 +125,10 @@ describe('MerchantRPG - Hero Management', () => {
         game.hireHero();
 
         expect(game.state.heroes[0].classIndex).toBe(2);
-        expect(game.state.heroes[0].name).toBe('Mage #1');
-        expect(game.state.heroes[0].hp).toBe(80);
-        expect(game.state.heroes[0].atk).toBe(1);
-        expect(game.state.heroes[0].def).toBe(7);
+        expect(game.state.heroes[0].name).toBe('Rogue #1');
+        expect(game.state.heroes[0].hp).toBe(85);
+        expect(game.state.heroes[0].atk).toBe(5);
+        expect(game.state.heroes[0].def).toBe(8);
     });
 
     it('should increment hero ID for each hire', () => {
@@ -186,35 +187,35 @@ describe('MerchantRPG - Leveling System', () => {
     it('should level up hero when enough EXP gained', () => {
         const hero = {
             id: 1,
-            classIndex: 0,
+            classIndex: 0, // Fighter
             level: 1,
             exp: 0,
             hp: 100,
             maxHp: 100,
-            atk: 5,
-            def: 14
+            atk: 6,
+            def: 12
         };
 
         game.giveExp(hero, 100);
 
         expect(hero.level).toBe(2);
         expect(hero.exp).toBe(0);
-        expect(hero.maxHp).toBe(110); // +10 from tier 0
-        expect(hero.hp).toBe(110); // Fully healed
-        expect(hero.atk).toBeCloseTo(5.4, 1); // +0.4 from tier 0
-        expect(hero.def).toBeCloseTo(15.2, 1); // +1.2 from tier 0
+        expect(hero.maxHp).toBe(112); // +12 from tier 0 (Fighter hpPlv)
+        expect(hero.hp).toBe(112); // Fully healed
+        expect(hero.atk).toBeCloseTo(6.5, 1); // +0.5 from tier 0 (Fighter atkPlv)
+        expect(hero.def).toBeCloseTo(13.0, 1); // +1.0 from tier 0 (Fighter defPlv)
     });
 
     it('should level up multiple times with enough EXP', () => {
         const hero = {
             id: 1,
-            classIndex: 0,
+            classIndex: 0, // Fighter
             level: 1,
             exp: 0,
             hp: 100,
             maxHp: 100,
-            atk: 5,
-            def: 14
+            atk: 6,
+            def: 12
         };
 
         game.giveExp(hero, 350); // Enough for levels 2, 3
@@ -226,25 +227,25 @@ describe('MerchantRPG - Leveling System', () => {
     it('should apply correct stat gains per tier', () => {
         const hero = {
             id: 1,
-            classIndex: 0, // Warrior
+            classIndex: 0, // Fighter
             level: 1,
             exp: 0,
             hp: 100,
             maxHp: 100,
-            atk: 5,
-            def: 14
+            atk: 6,
+            def: 12
         };
 
         // Level to 11 (tier 1)
         game.giveExp(hero, 5500);
 
         expect(hero.level).toBe(11);
-        // Levels 2-9 use tier 0 (8x 10HP), level 10-11 use tier 1 (2x 15HP)
-        expect(hero.maxHp).toBe(100 + 10 * 8 + 15 * 2); // = 210
+        // Levels 2-9 use tier 0 (8x 12HP), level 10-11 use tier 1 (2x 16HP)
+        expect(hero.maxHp).toBe(100 + 12 * 8 + 16 * 2); // = 228
     });
 });
 
-describe('MerchantRPG - Hero Unlock System', () => {
+describe('MerchantRPG - D&D Hero Unlock System', () => {
     let game;
 
     beforeEach(() => {
@@ -252,105 +253,157 @@ describe('MerchantRPG - Hero Unlock System', () => {
         game = new MerchantRPG({ skipInit: true });
     });
 
-    it('should unlock Berserker when Warrior reaches level 15', () => {
-        const warrior = {
-            id: 1,
-            classIndex: 0,
-            level: 1,
-            exp: 0,
-            hp: 100,
-            maxHp: 100,
-            atk: 5,
-            def: 14
-        };
-
-        game.state.heroes.push(warrior);
-
-        // Level up to 15
-        game.giveExp(warrior, 10500); // Enough to reach level 15
-
-        expect(warrior.level).toBeGreaterThanOrEqual(15);
-        expect(game.state.unlockedClasses).toContain(3); // Berserker index
-    });
-
-    it('should unlock Cleric when Mage reaches level 15', () => {
-        const mage = {
-            id: 1,
-            classIndex: 2,
-            level: 1,
-            exp: 0,
-            hp: 80,
-            maxHp: 80,
-            atk: 1,
-            def: 7
-        };
-
-        game.state.heroes.push(mage);
-        game.giveExp(mage, 10500);
-
-        expect(mage.level).toBeGreaterThanOrEqual(15);
-        expect(game.state.unlockedClasses).toContain(4); // Cleric index
-    });
-
-    it('should unlock Assassin when Rogue reaches level 15', () => {
-        const rogue = {
+    it('should unlock Cleric when Wizard reaches level 15', () => {
+        const wizard = {
             id: 1,
             classIndex: 1,
             level: 1,
             exp: 0,
-            hp: 90,
-            maxHp: 90,
+            hp: 70,
+            maxHp: 70,
+            atk: 2,
+            def: 6
+        };
+
+        game.state.heroes.push(wizard);
+        game.giveExp(wizard, 10500);
+
+        expect(wizard.level).toBeGreaterThanOrEqual(15);
+        expect(game.state.unlockedClasses).toContain(3); // Cleric index
+    });
+
+    it('should unlock Ranger when Rogue reaches level 15', () => {
+        const rogue = {
+            id: 1,
+            classIndex: 2,
+            level: 1,
+            exp: 0,
+            hp: 85,
+            maxHp: 85,
             atk: 5,
-            def: 9
+            def: 8
         };
 
         game.state.heroes.push(rogue);
         game.giveExp(rogue, 10500);
 
         expect(rogue.level).toBeGreaterThanOrEqual(15);
-        expect(game.state.unlockedClasses).toContain(5); // Assassin index
+        expect(game.state.unlockedClasses).toContain(4); // Ranger index
     });
 
-    it('should unlock Paladin with Warrior level 30 and Cleric level 15', () => {
-        const warrior = {
+    it('should unlock Barbarian when Fighter reaches level 15', () => {
+        const fighter = {
             id: 1,
             classIndex: 0,
             level: 1,
             exp: 0,
             hp: 100,
             maxHp: 100,
-            atk: 5,
-            def: 14
+            atk: 6,
+            def: 12
+        };
+
+        game.state.heroes.push(fighter);
+        game.giveExp(fighter, 10500);
+
+        expect(fighter.level).toBeGreaterThanOrEqual(15);
+        expect(game.state.unlockedClasses).toContain(5); // Barbarian index
+    });
+
+    it('should unlock Paladin with Fighter level 30 and Cleric level 15', () => {
+        const fighter = {
+            id: 1,
+            classIndex: 0,
+            level: 1,
+            exp: 0,
+            hp: 100,
+            maxHp: 100,
+            atk: 6,
+            def: 12
         };
 
         const cleric = {
             id: 2,
-            classIndex: 4,
+            classIndex: 3,
             level: 1,
             exp: 0,
-            hp: 80,
-            maxHp: 80,
-            atk: 1,
-            def: 7
+            hp: 90,
+            maxHp: 90,
+            atk: 4,
+            def: 10
         };
 
-        game.state.heroes.push(warrior, cleric);
+        game.state.heroes.push(fighter, cleric);
 
-        // Level warrior to 30
-        game.giveExp(warrior, 45000);
+        // Level fighter to 30
+        game.giveExp(fighter, 45000);
         // Level cleric to 15
         game.giveExp(cleric, 10500);
 
-        expect(warrior.level).toBeGreaterThanOrEqual(30);
+        expect(fighter.level).toBeGreaterThanOrEqual(30);
         expect(cleric.level).toBeGreaterThanOrEqual(15);
         expect(game.state.unlockedClasses).toContain(6); // Paladin index
     });
 
+    it('should unlock Warlock when Wizard reaches level 30', () => {
+        const wizard = {
+            id: 1,
+            classIndex: 1,
+            level: 1,
+            exp: 0,
+            hp: 70,
+            maxHp: 70,
+            atk: 2,
+            def: 6
+        };
+
+        game.state.heroes.push(wizard);
+        game.giveExp(wizard, 45000);
+
+        expect(wizard.level).toBeGreaterThanOrEqual(30);
+        expect(game.state.unlockedClasses).toContain(7); // Warlock index
+    });
+
+    it('should unlock Monk with Fighter level 20 and Rogue level 15', () => {
+        const fighter = {
+            id: 1,
+            classIndex: 0,
+            level: 1,
+            exp: 0,
+            hp: 100,
+            maxHp: 100,
+            atk: 6,
+            def: 12
+        };
+
+        const rogue = {
+            id: 2,
+            classIndex: 2,
+            level: 1,
+            exp: 0,
+            hp: 85,
+            maxHp: 85,
+            atk: 5,
+            def: 8
+        };
+
+        game.state.heroes.push(fighter, rogue);
+
+        // Level fighter to 20
+        game.giveExp(fighter, 19000);
+        // Level rogue to 15
+        game.giveExp(rogue, 10500);
+
+        expect(fighter.level).toBeGreaterThanOrEqual(20);
+        expect(rogue.level).toBeGreaterThanOrEqual(15);
+        expect(game.state.unlockedClasses).toContain(8); // Monk index
+    });
+
     it('should unlock Bard when 3 heroes reach level 20+', () => {
         const heroes = [
-            { id: 1, classIndex: 0, level: 1, exp: 0, hp: 100, maxHp: 100, atk: 5, def: 14 },
-            { id: 2, classIndex: 1, level: 1, exp: 0, hp: 90, maxHp: 90, atk: 5, def: 9 },
-            { id: 3, classIndex: 2, level: 1, exp: 0, hp: 80, maxHp: 80, atk: 1, def: 7 }
+            { id: 1, classIndex: 0, level: 1, exp: 0, hp: 100, maxHp: 100, atk: 6, def: 12 },
+            { id: 2, classIndex: 1, level: 1, exp: 0, hp: 70, maxHp: 70, atk: 2, def: 6 },
+            { id: 3, classIndex: 2, level: 1, exp: 0, hp: 85, maxHp: 85, atk: 5, def: 8 }
         ];
 
         game.state.heroes.push(...heroes);
@@ -363,7 +416,7 @@ describe('MerchantRPG - Hero Unlock System', () => {
         heroes.forEach(hero => {
             expect(hero.level).toBeGreaterThanOrEqual(20);
         });
-        expect(game.state.unlockedClasses).toContain(8); // Bard index
+        expect(game.state.unlockedClasses).toContain(9); // Bard index
     });
 });
 
