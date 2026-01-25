@@ -42,11 +42,21 @@ describe('MerchantRPG - Game Initialization', () => {
         expect(game.state.nextHeroId).toBe(1);
     });
 
-    it('should have 3 hero templates', () => {
-        expect(game.heroTemplates).toHaveLength(3);
+    it('should have 9 hero templates', () => {
+        expect(game.heroTemplates).toHaveLength(9);
         expect(game.heroTemplates[0].name).toBe('Warrior');
         expect(game.heroTemplates[1].name).toBe('Rogue');
         expect(game.heroTemplates[2].name).toBe('Mage');
+        expect(game.heroTemplates[3].name).toBe('Berserker');
+        expect(game.heroTemplates[4].name).toBe('Cleric');
+        expect(game.heroTemplates[5].name).toBe('Assassin');
+        expect(game.heroTemplates[6].name).toBe('Paladin');
+        expect(game.heroTemplates[7].name).toBe('Dark Knight');
+        expect(game.heroTemplates[8].name).toBe('Bard');
+    });
+
+    it('should start with 3 unlocked classes', () => {
+        expect(game.state.unlockedClasses).toEqual([0, 1, 2]);
     });
 
     it('should have 6 quest templates', () => {
@@ -231,6 +241,129 @@ describe('MerchantRPG - Leveling System', () => {
         expect(hero.level).toBe(11);
         // Levels 2-9 use tier 0 (8x 10HP), level 10-11 use tier 1 (2x 15HP)
         expect(hero.maxHp).toBe(100 + 10 * 8 + 15 * 2); // = 210
+    });
+});
+
+describe('MerchantRPG - Hero Unlock System', () => {
+    let game;
+
+    beforeEach(() => {
+        localStorage.clear();
+        game = new MerchantRPG({ skipInit: true });
+    });
+
+    it('should unlock Berserker when Warrior reaches level 15', () => {
+        const warrior = {
+            id: 1,
+            classIndex: 0,
+            level: 1,
+            exp: 0,
+            hp: 100,
+            maxHp: 100,
+            atk: 5,
+            def: 14
+        };
+
+        game.state.heroes.push(warrior);
+
+        // Level up to 15
+        game.giveExp(warrior, 10500); // Enough to reach level 15
+
+        expect(warrior.level).toBeGreaterThanOrEqual(15);
+        expect(game.state.unlockedClasses).toContain(3); // Berserker index
+    });
+
+    it('should unlock Cleric when Mage reaches level 15', () => {
+        const mage = {
+            id: 1,
+            classIndex: 2,
+            level: 1,
+            exp: 0,
+            hp: 80,
+            maxHp: 80,
+            atk: 1,
+            def: 7
+        };
+
+        game.state.heroes.push(mage);
+        game.giveExp(mage, 10500);
+
+        expect(mage.level).toBeGreaterThanOrEqual(15);
+        expect(game.state.unlockedClasses).toContain(4); // Cleric index
+    });
+
+    it('should unlock Assassin when Rogue reaches level 15', () => {
+        const rogue = {
+            id: 1,
+            classIndex: 1,
+            level: 1,
+            exp: 0,
+            hp: 90,
+            maxHp: 90,
+            atk: 5,
+            def: 9
+        };
+
+        game.state.heroes.push(rogue);
+        game.giveExp(rogue, 10500);
+
+        expect(rogue.level).toBeGreaterThanOrEqual(15);
+        expect(game.state.unlockedClasses).toContain(5); // Assassin index
+    });
+
+    it('should unlock Paladin with Warrior level 30 and Cleric level 15', () => {
+        const warrior = {
+            id: 1,
+            classIndex: 0,
+            level: 1,
+            exp: 0,
+            hp: 100,
+            maxHp: 100,
+            atk: 5,
+            def: 14
+        };
+
+        const cleric = {
+            id: 2,
+            classIndex: 4,
+            level: 1,
+            exp: 0,
+            hp: 80,
+            maxHp: 80,
+            atk: 1,
+            def: 7
+        };
+
+        game.state.heroes.push(warrior, cleric);
+
+        // Level warrior to 30
+        game.giveExp(warrior, 45000);
+        // Level cleric to 15
+        game.giveExp(cleric, 10500);
+
+        expect(warrior.level).toBeGreaterThanOrEqual(30);
+        expect(cleric.level).toBeGreaterThanOrEqual(15);
+        expect(game.state.unlockedClasses).toContain(6); // Paladin index
+    });
+
+    it('should unlock Bard when 3 heroes reach level 20+', () => {
+        const heroes = [
+            { id: 1, classIndex: 0, level: 1, exp: 0, hp: 100, maxHp: 100, atk: 5, def: 14 },
+            { id: 2, classIndex: 1, level: 1, exp: 0, hp: 90, maxHp: 90, atk: 5, def: 9 },
+            { id: 3, classIndex: 2, level: 1, exp: 0, hp: 80, maxHp: 80, atk: 1, def: 7 }
+        ];
+
+        game.state.heroes.push(...heroes);
+
+        // Level all three to 20
+        heroes.forEach(hero => {
+            game.giveExp(hero, 19000);
+        });
+
+        heroes.forEach(hero => {
+            expect(hero.level).toBeGreaterThanOrEqual(20);
+        });
+        expect(game.state.unlockedClasses).toContain(8); // Bard index
     });
 });
 

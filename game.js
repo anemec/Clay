@@ -6,25 +6,76 @@ class MerchantRPG {
         // Options for testing
         this.skipInit = options.skipInit || false;
 
-        // Hero templates from HeroList.json (first 3 basic classes)
+        // Hero templates from HeroList.json (all 9 classes)
         this.heroTemplates = [
             {
-                class: 1, name: "Warrior", hp: 100, atk: 5, def: 14,
+                class: 1, name: "Warrior", hp: 100, atk: 5, def: 14, mdef: 8, crit: 1,
                 hpPlv: [10, 15, 20], atkPlv: [0.4, 1, 1.4], defPlv: [1.2, 1.8, 2.5],
                 desc1: "A strong tank with", desc2: "high defense",
-                icon: "images/heroes/Icn_Hero_Warrior.png"
+                icon: "images/heroes/Icn_Hero_Warrior.png",
+                unlocked: true, cost: 100
             },
             {
-                class: 2, name: "Rogue", hp: 90, atk: 5, def: 9,
+                class: 2, name: "Rogue", hp: 90, atk: 5, def: 9, mdef: 8, crit: 5,
                 hpPlv: [8, 12, 14], atkPlv: [0.6, 1.2, 1.8], defPlv: [0.5, 1, 1.5],
                 desc1: "A nimble fighter with", desc2: "high accuracy",
-                icon: "images/heroes/Icn_Hero_Rogue.png"
+                icon: "images/heroes/Icn_Hero_Rogue.png",
+                unlocked: true, cost: 100
             },
             {
-                class: 3, name: "Mage", hp: 80, atk: 1, matk: 5, def: 7,
+                class: 3, name: "Mage", hp: 80, atk: 1, def: 7, mdef: 10, crit: 1, matk: 5,
                 hpPlv: [7, 11, 14], atkPlv: [0.1, 0.2, 0.3], defPlv: [0.4, 0.8, 1.2],
                 desc1: "A powerful wizard with", desc2: "high magic attack",
-                icon: "images/heroes/Icn_Hero_Mage.png"
+                icon: "images/heroes/Icn_Hero_Mage.png",
+                unlocked: true, cost: 100
+            },
+            {
+                class: 4, name: "Berserker", hp: 90, atk: 5, def: 10, mdef: 7, crit: 1,
+                hpPlv: [8, 12, 16], atkPlv: [0.9, 1.8, 2.4], defPlv: [0.5, 1, 1.5],
+                desc1: "A mighty warrior with", desc2: "high attack",
+                icon: "images/heroes/Icn_Hero_Berserker.png",
+                unlocked: false, cost: 150,
+                unlockReq: "Requires Warrior Lv.15"
+            },
+            {
+                class: 5, name: "Cleric", hp: 80, atk: 1, def: 7, mdef: 10, crit: 1, matk: 5,
+                hpPlv: [7, 11, 14], atkPlv: [0.1, 0.2, 0.3], defPlv: [0.4, 0.8, 1.2],
+                desc1: "A wise priest with", desc2: "high accuracy",
+                icon: "images/heroes/Icn_Hero_Cleric.png",
+                unlocked: false, cost: 150,
+                unlockReq: "Requires Mage Lv.15"
+            },
+            {
+                class: 6, name: "Assassin", hp: 90, atk: 5, def: 9, mdef: 8, crit: 10,
+                hpPlv: [8, 12, 16], atkPlv: [0.5, 1, 1.6], defPlv: [0.5, 1, 1.5],
+                desc1: "A deadly ninja with", desc2: "high crit",
+                icon: "images/heroes/Icn_Hero_Assassin.png",
+                unlocked: false, cost: 150,
+                unlockReq: "Requires Rogue Lv.15"
+            },
+            {
+                class: 7, name: "Paladin", hp: 100, atk: 3, def: 8, mdef: 14, crit: 1, matk: 3,
+                hpPlv: [10, 15, 20], atkPlv: [0.3, 0.6, 0.9], defPlv: [0.4, 0.8, 1.2],
+                desc1: "A sturdy tank with", desc2: "high magic defense",
+                icon: "images/heroes/Icn_Hero_Paladin.png",
+                unlocked: false, cost: 250,
+                unlockReq: "Requires Warrior Lv.30 + Cleric Lv.15"
+            },
+            {
+                class: 8, name: "Dark Knight", hp: 80, atk: 3, def: 10, mdef: 9, crit: 1, matk: 3,
+                hpPlv: [7, 11, 15], atkPlv: [0.4, 0.9, 1.4], defPlv: [0.4, 0.8, 1.2],
+                desc1: "A powerful warlock", desc2: "with high damage",
+                icon: "images/heroes/Icn_Hero_Dark_Knight.png",
+                unlocked: false, cost: 250,
+                unlockReq: "Requires Mage Lv.30 + Berserker Lv.15"
+            },
+            {
+                class: 9, name: "Bard", hp: 60, atk: 2, def: 6, mdef: 6, crit: 1, matk: 2,
+                hpPlv: [7, 10, 13], atkPlv: [0.3, 0.6, 0.9], defPlv: [0.2, 0.4, 1],
+                desc1: "A chronicler", desc2: "of adventures",
+                icon: "images/heroes/Icn_Hero_Bard.png",
+                unlocked: false, cost: 300,
+                unlockReq: "Requires 3 heroes at Lv.20+"
             }
         ];
 
@@ -67,7 +118,8 @@ class MerchantRPG {
             heroes: [],
             materials: {},
             nextHeroId: 1,
-            activeTab: 'heroes'
+            activeTab: 'heroes',
+            unlockedClasses: [0, 1, 2] // Warrior, Rogue, Mage start unlocked
         };
 
         this.currentQuest = null; // For modal
@@ -82,15 +134,73 @@ class MerchantRPG {
         }
     }
 
+    // === Hero Unlock System ===
+    checkHeroUnlocks() {
+        // Check each locked hero class to see if it should be unlocked
+        this.heroTemplates.forEach((template, index) => {
+            if (!this.state.unlockedClasses.includes(index)) {
+                const shouldUnlock = this.checkUnlockRequirement(index);
+                if (shouldUnlock) {
+                    this.state.unlockedClasses.push(index);
+                    this.save();
+                }
+            }
+        });
+    }
+
+    checkUnlockRequirement(classIndex) {
+        const template = this.heroTemplates[classIndex];
+
+        switch(template.name) {
+            case "Berserker":
+                // Requires Warrior Lv.15
+                return this.state.heroes.some(h => h.classIndex === 0 && h.level >= 15);
+
+            case "Cleric":
+                // Requires Mage Lv.15
+                return this.state.heroes.some(h => h.classIndex === 2 && h.level >= 15);
+
+            case "Assassin":
+                // Requires Rogue Lv.15
+                return this.state.heroes.some(h => h.classIndex === 1 && h.level >= 15);
+
+            case "Paladin":
+                // Requires Warrior Lv.30 + Cleric Lv.15
+                const hasWarrior30 = this.state.heroes.some(h => h.classIndex === 0 && h.level >= 30);
+                const hasCleric15 = this.state.heroes.some(h => h.classIndex === 4 && h.level >= 15);
+                return hasWarrior30 && hasCleric15;
+
+            case "Dark Knight":
+                // Requires Mage Lv.30 + Berserker Lv.15
+                const hasMage30 = this.state.heroes.some(h => h.classIndex === 2 && h.level >= 30);
+                const hasBerserker15 = this.state.heroes.some(h => h.classIndex === 3 && h.level >= 15);
+                return hasMage30 && hasBerserker15;
+
+            case "Bard":
+                // Requires 3 heroes at Lv.20+
+                const level20Heroes = this.state.heroes.filter(h => h.level >= 20);
+                return level20Heroes.length >= 3;
+
+            default:
+                return false;
+        }
+    }
+
     // === Hero Management ===
     hireHero() {
         const selectElement = document.getElementById('hero-class-select');
         const classIndex = parseInt(selectElement.value);
         const template = this.heroTemplates[classIndex];
-        const cost = 100;
+
+        if (!this.state.unlockedClasses.includes(classIndex)) {
+            alert(`${template.name} is locked! ${template.unlockReq}`);
+            return;
+        }
+
+        const cost = template.cost;
 
         if (this.state.gold < cost) {
-            alert('Not enough gold! Need 100g');
+            alert(`Not enough gold! Need ${cost}g`);
             return;
         }
 
@@ -104,6 +214,8 @@ class MerchantRPG {
             maxHp: template.hp,
             atk: template.atk,
             def: template.def,
+            mdef: template.mdef,
+            crit: template.crit,
             status: 'idle', // 'idle' or 'questing'
             questId: null,
             questStartTime: null,
@@ -226,12 +338,14 @@ class MerchantRPG {
 
     giveExp(hero, exp) {
         hero.exp += exp;
+        let leveledUp = false;
 
         // Level up check - recalculate expNeeded each iteration
         while (hero.exp >= this.getExpForLevel(hero.level)) {
             const expNeeded = this.getExpForLevel(hero.level);
             hero.exp -= expNeeded;
             hero.level++;
+            leveledUp = true;
 
             // Apply stat gains
             const template = this.heroTemplates[hero.classIndex];
@@ -241,6 +355,11 @@ class MerchantRPG {
             hero.hp = hero.maxHp;
             hero.atk += template.atkPlv[tier];
             hero.def += template.defPlv[tier];
+        }
+
+        // Check for hero unlocks after leveling
+        if (leveledUp) {
+            this.checkHeroUnlocks();
         }
     }
 
@@ -303,6 +422,20 @@ class MerchantRPG {
     }
 
     renderHeroes() {
+        // Render hero class select dropdown
+        const heroClassSelect = document.getElementById('hero-class-select');
+        if (heroClassSelect) {
+            heroClassSelect.innerHTML = this.heroTemplates.map((template, index) => {
+                const isUnlocked = this.state.unlockedClasses.includes(index);
+                if (isUnlocked) {
+                    return `<option value="${index}">${template.name} - ${template.cost}g</option>`;
+                } else {
+                    return `<option value="${index}" disabled>🔒 ${template.name} - ${template.unlockReq}</option>`;
+                }
+            }).join('');
+        }
+
+        // Render hero list
         const heroesListElement = document.getElementById('heroes-list');
 
         if (this.state.heroes.length === 0) {
@@ -331,6 +464,7 @@ class MerchantRPG {
                             <span>❤️ ${hero.hp}/${hero.maxHp}</span>
                             <span>⚔️ ${Math.floor(hero.atk)}</span>
                             <span>🛡️ ${Math.floor(hero.def)}</span>
+                            ${hero.crit > 1 ? `<span>💥 ${hero.crit}</span>` : ''}
                         </div>
                         <div class="hero-exp">
                             <div class="exp-bar">
