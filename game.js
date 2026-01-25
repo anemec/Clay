@@ -606,10 +606,7 @@ if (typeof window !== 'undefined') {
     });
 }
 
-// Export for testing (Node.js/Vitest)
+// Export for testing (Node.js/Vitest) - CommonJS only
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { MerchantRPG };
 }
-
-// ES6 export for modern environments
-export { MerchantRPG };
