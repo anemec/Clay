@@ -121,10 +121,45 @@ class MerchantRPG {
             }
         ];
 
+        // === Loot System ===
+        // Rarity definitions with drop rates
+        this.lootRarities = {
+            common: { dropRate: 0.60, valueMultiplier: 1.0, color: '#888' },
+            uncommon: { dropRate: 0.25, valueMultiplier: 2.0, color: '#4a9' },
+            rare: { dropRate: 0.10, valueMultiplier: 4.0, color: '#49f' },
+            epic: { dropRate: 0.04, valueMultiplier: 8.0, color: '#a4f' },
+            legendary: { dropRate: 0.01, valueMultiplier: 15.0, color: '#fa0' }
+        };
+
+        // Item types
+        this.itemTypes = ['weapon', 'armor', 'potion', 'material'];
+
+        // Loot tables for different quest types
+        this.lootTables = {
+            forest: {
+                materials: ['Wood', 'Herbs', 'Vines', 'Mushrooms'],
+                weapons: ['Wooden Sword', 'Oak Staff', 'Hunter\'s Bow', 'Nature\'s Wrath'],
+                armor: ['Leather Armor', 'Bark Shield', 'Forest Cloak', 'Vine Bracers']
+            },
+            cove: {
+                materials: ['Fish', 'Shells', 'Coral', 'Pearls'],
+                weapons: ['Coral Blade', 'Trident', 'Wave Striker', 'Pearl Dagger'],
+                armor: ['Scale Mail', 'Shell Shield', 'Sea Cloak', 'Tidal Guard']
+            },
+            highlands: {
+                materials: ['Stone', 'Gems', 'Ore', 'Crystals'],
+                weapons: ['Iron Sword', 'Crystal Staff', 'Mountain Axe', 'Gem Blade'],
+                armor: ['Plate Armor', 'Stone Shield', 'Mountain Helm', 'Crystal Guard']
+            }
+        };
+
+        this.nextItemId = 1; // For unique item IDs
+
         this.state = {
             gold: 1000,  // Starting gold for testing
             heroes: [],
             materials: {},
+            inventory: [], // Loot items
             nextHeroId: 1,
             activeTab: 'heroes',
             unlockedClasses: [0, 1, 2] // Fighter, Wizard, Rogue start unlocked
@@ -336,6 +371,13 @@ class MerchantRPG {
             this.state.materials[material] += amount;
         });
 
+        // Generate and add loot to inventory
+        const loot = this.generateQuestLoot(hero.questId);
+        if (!this.state.inventory) {
+            this.state.inventory = [];
+        }
+        this.state.inventory.push(...loot);
+
         // Reward EXP
         this.giveExp(hero, quest.exp);
 
@@ -346,7 +388,9 @@ class MerchantRPG {
         hero.questDuration = null;
 
         this.save();
-        this.render();
+        if (!this.skipInit) {
+            this.render();
+        }
     }
 
     giveExp(hero, exp) {
@@ -378,6 +422,117 @@ class MerchantRPG {
 
     getExpForLevel(level) {
         return level * 100; // Simple formula: need 100/200/300... exp per level
+    }
+
+    // === Loot System Functions ===
+    getDropRate(rarity) {
+        return this.lootRarities[rarity]?.dropRate || 0;
+    }
+
+    rollForDrop(rarity) {
+        const dropRate = this.getDropRate(rarity);
+        return Math.random() <= dropRate;
+    }
+
+    selectRarity(luckMultiplier = 1.0) {
+        // Generate a random number and select rarity based on cumulative drop rates
+        // Higher luck multiplier shifts the roll towards better rarities
+        let roll = Math.random() / luckMultiplier;
+
+        // Check rarities from best to worst
+        if (roll <= this.lootRarities.legendary.dropRate) return 'legendary';
+        if (roll <= this.lootRarities.legendary.dropRate + this.lootRarities.epic.dropRate) return 'epic';
+        if (roll <= this.lootRarities.legendary.dropRate + this.lootRarities.epic.dropRate + this.lootRarities.rare.dropRate) return 'rare';
+        if (roll <= 0.40) return 'uncommon'; // Roughly 0.01 + 0.04 + 0.10 + 0.25
+        return 'common';
+    }
+
+    generateLoot(level, options = {}) {
+        const luckMultiplier = options.luckMultiplier || 1.0;
+
+        // Select rarity
+        const rarity = this.selectRarity(luckMultiplier);
+        const rarityData = this.lootRarities[rarity];
+
+        // Select item type
+        const type = this.itemTypes[Math.floor(Math.random() * this.itemTypes.length)];
+
+        // Generate value based on level and rarity
+        // Ensure level always contributes significantly to value
+        const baseValue = level * 20; // Base value from level
+        const rarityBonus = level * 10 * (rarityData.valueMultiplier - 1); // Rarity bonus
+        const value = Math.floor(baseValue + rarityBonus);
+
+        // Generate item name based on type
+        let name = '';
+        let description = '';
+        let stats = {};
+
+        if (type === 'weapon') {
+            const weaponNames = ['Sword', 'Axe', 'Bow', 'Staff', 'Dagger', 'Mace'];
+            const baseName = weaponNames[Math.floor(Math.random() * weaponNames.length)];
+            name = `${rarity.charAt(0).toUpperCase() + rarity.slice(1)} ${baseName}`;
+
+            const attackPower = Math.floor(level * rarityData.valueMultiplier * 0.5);
+            stats.attack = attackPower;
+            description = `A ${rarity} weapon with ${attackPower} attack power.`;
+
+        } else if (type === 'armor') {
+            const armorNames = ['Helmet', 'Chestplate', 'Boots', 'Gloves', 'Shield'];
+            const baseName = armorNames[Math.floor(Math.random() * armorNames.length)];
+            name = `${rarity.charAt(0).toUpperCase() + rarity.slice(1)} ${baseName}`;
+
+            const defensePower = Math.floor(level * rarityData.valueMultiplier * 0.4);
+            stats.defense = defensePower;
+            description = `A ${rarity} armor piece with ${defensePower} defense.`;
+
+        } else if (type === 'potion') {
+            const potionTypes = ['Health', 'Mana', 'Strength', 'Defense', 'Speed'];
+            const baseName = potionTypes[Math.floor(Math.random() * potionTypes.length)];
+            name = `${rarity.charAt(0).toUpperCase() + rarity.slice(1)} ${baseName} Potion`;
+            description = `A ${rarity} potion that restores or enhances ${baseName.toLowerCase()}.`;
+
+        } else if (type === 'material') {
+            const materialNames = ['Ore', 'Crystal', 'Essence', 'Shard', 'Dust'];
+            const baseName = materialNames[Math.floor(Math.random() * materialNames.length)];
+            name = `${rarity.charAt(0).toUpperCase() + rarity.slice(1)} ${baseName}`;
+            description = `A ${rarity} crafting material.`;
+        }
+
+        return {
+            id: this.nextItemId++,
+            name,
+            type,
+            rarity,
+            level,
+            value,
+            stats,
+            description
+        };
+    }
+
+    generateQuestLoot(questId) {
+        const quest = this.questTemplates.find(q => q.id === questId);
+        if (!quest) return [];
+
+        // Determine quest type based on quest name/description
+        let questType = 'forest';
+        if (quest.name.toLowerCase().includes('yarsol') || quest.desc.toLowerCase().includes('cove')) {
+            questType = 'cove';
+        } else if (quest.name.toLowerCase().includes('aldur') || quest.desc.toLowerCase().includes('highland')) {
+            questType = 'highlands';
+        }
+
+        // Generate 1-3 items based on quest level
+        const itemCount = Math.floor(Math.random() * 3) + 1;
+        const loot = [];
+
+        for (let i = 0; i < itemCount; i++) {
+            const item = this.generateLoot(quest.level);
+            loot.push(item);
+        }
+
+        return loot;
     }
 
     // === Game Loop ===
