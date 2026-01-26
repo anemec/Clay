@@ -1,445 +1,51 @@
 // Merchant RPG - MVP Version
 // Using data from MerchantGameDB: https://github.com/Benzeliden/MerchantGameDB
 
+// Import data and utilities
+import {
+    heroTemplates,
+    questTemplates,
+    tacticsLibrary,
+    lootRarities,
+    itemTypes,
+    lootTables,
+    battlePartyGrid
+} from './src/data/index.js';
+
+import {
+    formatTime as utilFormatTime,
+    SAVE_KEY,
+    STARTING_GOLD,
+    UNLOCKED_CLASSES_DEFAULT,
+    EXP_PER_LEVEL_MULTIPLIER
+} from './src/utils/index.js';
+
 class MerchantRPG {
     constructor(options = {}) {
         // Options for testing
         this.skipInit = options.skipInit || false;
 
-        // Hero templates - D&D/BG3 inspired classes
-        this.heroTemplates = [
-            {
-                class: 1, name: "Fighter", hp: 100, atk: 6, def: 12, mdef: 7, crit: 2,
-                hpPlv: [12, 16, 20], atkPlv: [0.5, 1.1, 1.6], defPlv: [1.0, 1.5, 2.0],
-                desc1: "Master of weapons", desc2: "and armor",
-                icon: "images/heroes/Icn_Hero_Warrior.png",
-                unlocked: true, cost: 100
-            },
-            {
-                class: 2, name: "Wizard", hp: 70, atk: 2, def: 6, mdef: 12, crit: 1, matk: 8,
-                hpPlv: [6, 9, 12], atkPlv: [0.1, 0.3, 0.5], defPlv: [0.3, 0.6, 0.9],
-                desc1: "Arcane spellcaster", desc2: "with vast knowledge",
-                icon: "images/heroes/Icn_Hero_Mage.png",
-                unlocked: true, cost: 100
-            },
-            {
-                class: 3, name: "Rogue", hp: 85, atk: 5, def: 8, mdef: 7, crit: 8,
-                hpPlv: [9, 12, 15], atkPlv: [0.6, 1.3, 1.9], defPlv: [0.4, 0.8, 1.2],
-                desc1: "Master of stealth", desc2: "and cunning",
-                icon: "images/heroes/Icn_Hero_Rogue.png",
-                unlocked: true, cost: 100
-            },
-            {
-                class: 4, name: "Cleric", hp: 90, atk: 4, def: 10, mdef: 11, crit: 1, matk: 6,
-                hpPlv: [10, 14, 17], atkPlv: [0.3, 0.7, 1.0], defPlv: [0.7, 1.2, 1.6],
-                desc1: "Divine spellcaster", desc2: "and healer",
-                icon: "images/heroes/Icn_Hero_Cleric.png",
-                unlocked: false, cost: 150,
-                unlockReq: "Requires Wizard Lv.15"
-            },
-            {
-                class: 5, name: "Ranger", hp: 95, atk: 7, def: 9, mdef: 8, crit: 4,
-                hpPlv: [11, 14, 18], atkPlv: [0.7, 1.4, 2.0], defPlv: [0.5, 1.0, 1.4],
-                desc1: "Expert tracker and", desc2: "archer",
-                icon: "images/heroes/Icn_Hero_Assassin.png",
-                unlocked: false, cost: 150,
-                unlockReq: "Requires Rogue Lv.15"
-            },
-            {
-                class: 6, name: "Barbarian", hp: 110, atk: 8, def: 10, mdef: 6, crit: 3,
-                hpPlv: [14, 18, 22], atkPlv: [0.9, 1.8, 2.5], defPlv: [0.6, 1.1, 1.5],
-                desc1: "Primal warrior", desc2: "fueled by rage",
-                icon: "images/heroes/Icn_Hero_Berserker.png",
-                unlocked: false, cost: 150,
-                unlockReq: "Requires Fighter Lv.15"
-            },
-            {
-                class: 7, name: "Paladin", hp: 105, atk: 6, def: 11, mdef: 10, crit: 2, matk: 4,
-                hpPlv: [13, 17, 21], atkPlv: [0.5, 1.0, 1.4], defPlv: [0.8, 1.4, 1.9],
-                desc1: "Holy warrior bound", desc2: "by sacred oaths",
-                icon: "images/heroes/Icn_Hero_Paladin.png",
-                unlocked: false, cost: 250,
-                unlockReq: "Requires Fighter Lv.30 + Cleric Lv.15"
-            },
-            {
-                class: 8, name: "Warlock", hp: 75, atk: 3, def: 7, mdef: 10, crit: 1, matk: 9,
-                hpPlv: [7, 10, 13], atkPlv: [0.2, 0.5, 0.8], defPlv: [0.4, 0.8, 1.1],
-                desc1: "Bound by eldritch", desc2: "pact magic",
-                icon: "images/heroes/Icn_Hero_Dark_Knight.png",
-                unlocked: false, cost: 250,
-                unlockReq: "Requires Wizard Lv.30"
-            },
-            {
-                class: 9, name: "Monk", hp: 90, atk: 6, def: 12, mdef: 9, crit: 5,
-                hpPlv: [10, 13, 16], atkPlv: [0.6, 1.2, 1.7], defPlv: [0.9, 1.5, 2.0],
-                desc1: "Martial arts master", desc2: "of ki energy",
-                icon: "images/heroes/Icn_Hero_Assassin.png",
-                unlocked: false, cost: 250,
-                unlockReq: "Requires Fighter Lv.20 + Rogue Lv.15"
-            },
-            {
-                class: 10, name: "Bard", hp: 80, atk: 4, def: 8, mdef: 9, crit: 2, matk: 5,
-                hpPlv: [8, 11, 14], atkPlv: [0.4, 0.8, 1.2], defPlv: [0.5, 0.9, 1.3],
-                desc1: "Jack of all trades", desc2: "master of inspiration",
-                icon: "images/heroes/Icn_Hero_Bard.png",
-                unlocked: false, cost: 300,
-                unlockReq: "Requires 3 heroes at Lv.20+"
-            }
-        ];
+        // Load game data from modules
+        this.heroTemplates = heroTemplates;
+        this.questTemplates = questTemplates;
+        this.tacticsLibrary = tacticsLibrary;
+        this.lootRarities = lootRarities;
+        this.itemTypes = itemTypes;
+        this.lootTables = lootTables;
+        this.battlePartyGrid = battlePartyGrid;
 
-        // Quest templates from MapList.json (first 6 maps, simplified for MVP)
-        this.questTemplates = [
-            {
-                id: 1, name: "Tuvale Map", desc: "Basic Forest Dungeon",
-                duration: 30, level: 1, gold: 50, exp: 25,
-                materials: ["Wood", "Herbs"], materialCount: [2, 3]
-            },
-            {
-                id: 2, name: "Hard Tuvale Map", desc: "Hard Forest Dungeon",
-                duration: 60, level: 3, gold: 100, exp: 50,
-                materials: ["Wood", "Iron Ore", "Herbs"], materialCount: [3, 2, 4]
-            },
-            {
-                id: 3, name: "Yarsol Map", desc: "Basic Cove Dungeon",
-                duration: 90, level: 10, gold: 200, exp: 100,
-                materials: ["Fish", "Shells", "Coral"], materialCount: [4, 2, 1]
-            },
-            {
-                id: 4, name: "Hard Yarsol Map", desc: "Hard Cove Dungeon",
-                duration: 120, level: 16, gold: 400, exp: 200,
-                materials: ["Fish", "Pearls", "Shells"], materialCount: [5, 1, 3]
-            },
-            {
-                id: 5, name: "Aldur Map", desc: "Basic Highlands Dungeon",
-                duration: 150, level: 20, gold: 600, exp: 300,
-                materials: ["Stone", "Gems", "Ore"], materialCount: [6, 2, 3]
-            },
-            {
-                id: 6, name: "Hard Aldur Map", desc: "Hard Highlands Dungeon",
-                duration: 180, level: 26, gold: 1000, exp: 500,
-                materials: ["Gems", "Crystals", "Stone"], materialCount: [4, 2, 5]
-            }
-        ];
-
-        // === Loot System ===
-        // Rarity definitions with drop rates
-        this.lootRarities = {
-            common: { dropRate: 0.60, valueMultiplier: 1.0, color: '#888' },
-            uncommon: { dropRate: 0.25, valueMultiplier: 2.0, color: '#4a9' },
-            rare: { dropRate: 0.10, valueMultiplier: 4.0, color: '#49f' },
-            epic: { dropRate: 0.04, valueMultiplier: 8.0, color: '#a4f' },
-            legendary: { dropRate: 0.01, valueMultiplier: 15.0, color: '#fa0' }
-        };
-
-        // Item types
-        this.itemTypes = ['weapon', 'armor', 'potion', 'material'];
-
-        // Loot tables for different quest types
-        this.lootTables = {
-            forest: {
-                materials: ['Wood', 'Herbs', 'Vines', 'Mushrooms'],
-                weapons: ['Wooden Sword', 'Oak Staff', 'Hunter\'s Bow', 'Nature\'s Wrath'],
-                armor: ['Leather Armor', 'Bark Shield', 'Forest Cloak', 'Vine Bracers']
-            },
-            cove: {
-                materials: ['Fish', 'Shells', 'Coral', 'Pearls'],
-                weapons: ['Coral Blade', 'Trident', 'Wave Striker', 'Pearl Dagger'],
-                armor: ['Scale Mail', 'Shell Shield', 'Sea Cloak', 'Tidal Guard']
-            },
-            highlands: {
-                materials: ['Stone', 'Gems', 'Ore', 'Crystals'],
-                weapons: ['Iron Sword', 'Crystal Staff', 'Mountain Axe', 'Gem Blade'],
-                armor: ['Plate Armor', 'Stone Shield', 'Mountain Helm', 'Crystal Guard']
-            }
-        };
+        // Skip the old inline data definitions below - now using imports
 
         this.nextItemId = 1; // For unique item IDs
 
-        // === Battle Party System ===
-        // Grid configuration: 2 rows x 3 columns = 6 positions
-        // Row 0 = Front row (melee range), Row 1 = Back row (ranged/support)
-        this.battlePartyGrid = {
-            rows: 2,
-            cols: 3
-        };
-
-        // === Tactics Library ===
-        // Each class has unique tactics with different playstyles
-        // Tactics unlock as heroes level up and affect battle behavior
-        this.tacticsLibrary = {
-            fighter: [
-                {
-                    id: 'fighter_shield_wall',
-                    name: 'Shield Wall',
-                    description: 'Hold the front line. Draw enemy aggression and protect allies behind you.',
-                    category: 'defensive',
-                    unlockLevel: 1,
-                    effects: {
-                        defenseModifier: 1.3,
-                        damageModifier: 0.9,
-                        aggroMultiplier: 2.0,
-                        rowPreference: 'front'
-                    }
-                },
-                {
-                    id: 'fighter_berserker',
-                    name: 'Berserker Rage',
-                    description: 'Charge into battle with reckless abandon. Maximum damage, minimum defense.',
-                    category: 'offensive',
-                    unlockLevel: 1,
-                    effects: {
-                        damageModifier: 1.4,
-                        defenseModifier: 0.7,
-                        initiative: 10,
-                        rowPreference: 'front'
-                    }
-                },
-                {
-                    id: 'fighter_tactical',
-                    name: 'Tactical Strike',
-                    description: 'Balance offense and defense. Adapt to battlefield conditions.',
-                    category: 'offensive',
-                    unlockLevel: 10,
-                    effects: {
-                        damageModifier: 1.2,
-                        defenseModifier: 1.1,
-                        criticalChance: 0.15,
-                        rowPreference: 'front'
-                    }
-                }
-            ],
-            wizard: [
-                {
-                    id: 'wizard_arcane_barrage',
-                    name: 'Arcane Barrage',
-                    description: 'Rain destruction from afar with powerful spells. Stay safe in the back.',
-                    category: 'offensive',
-                    unlockLevel: 1,
-                    effects: {
-                        damageModifier: 1.5,
-                        range: 'long',
-                        rowPreference: 'back'
-                    }
-                },
-                {
-                    id: 'wizard_crowd_control',
-                    name: 'Crowd Control',
-                    description: 'Focus on disabling multiple enemies rather than raw damage.',
-                    category: 'support',
-                    unlockLevel: 1,
-                    effects: {
-                        damageModifier: 0.8,
-                        aoeMultiplier: 1.5,
-                        rowPreference: 'back'
-                    }
-                },
-                {
-                    id: 'wizard_glass_cannon',
-                    name: 'Glass Cannon',
-                    description: 'Channel all power into devastating single-target spells.',
-                    category: 'offensive',
-                    unlockLevel: 15,
-                    effects: {
-                        damageModifier: 2.0,
-                        defenseModifier: 0.5,
-                        criticalChance: 0.25,
-                        rowPreference: 'back'
-                    }
-                }
-            ],
-            rogue: [
-                {
-                    id: 'rogue_shadow_strike',
-                    name: 'Shadow Strike',
-                    description: 'Sneak behind enemies for devastating surprise attacks from the shadows.',
-                    category: 'offensive',
-                    unlockLevel: 1,
-                    effects: {
-                        damageModifier: 1.6,
-                        criticalChance: 0.3,
-                        initiative: 15,
-                        targetPreference: 'back',
-                        rowPreference: 'front'
-                    }
-                },
-                {
-                    id: 'rogue_opportunist',
-                    name: 'Opportunist',
-                    description: 'Stay out of direct combat. Strike when enemies are vulnerable.',
-                    category: 'offensive',
-                    unlockLevel: 1,
-                    effects: {
-                        damageModifier: 1.3,
-                        criticalChance: 0.35,
-                        initiative: 8,
-                        rowPreference: 'back'
-                    }
-                },
-                {
-                    id: 'rogue_hit_and_run',
-                    name: 'Hit and Run',
-                    description: 'Quick strikes followed by tactical retreat. Minimize damage taken.',
-                    category: 'offensive',
-                    unlockLevel: 10,
-                    effects: {
-                        damageModifier: 1.2,
-                        defenseModifier: 1.3,
-                        initiative: 12,
-                        rowPreference: 'front'
-                    }
-                }
-            ],
-            cleric: [
-                {
-                    id: 'cleric_battle_healer',
-                    name: 'Battle Healer',
-                    description: 'Support allies from the front lines with healing and buffs.',
-                    category: 'support',
-                    unlockLevel: 1,
-                    effects: {
-                        healingMultiplier: 1.5,
-                        defenseModifier: 1.2,
-                        rowPreference: 'front'
-                    }
-                },
-                {
-                    id: 'cleric_divine_protection',
-                    name: 'Divine Protection',
-                    description: 'Stay back and provide maximum healing and shielding to the party.',
-                    category: 'support',
-                    unlockLevel: 1,
-                    effects: {
-                        healingMultiplier: 2.0,
-                        shieldMultiplier: 1.5,
-                        rowPreference: 'back'
-                    }
-                }
-            ],
-            ranger: [
-                {
-                    id: 'ranger_sniper',
-                    name: 'Sniper',
-                    description: 'Pick off enemies from maximum range with precise arrows.',
-                    category: 'offensive',
-                    unlockLevel: 1,
-                    effects: {
-                        damageModifier: 1.4,
-                        criticalChance: 0.25,
-                        range: 'long',
-                        rowPreference: 'back'
-                    }
-                },
-                {
-                    id: 'ranger_hunter',
-                    name: 'Hunter',
-                    description: 'Track and engage enemies at medium range. Balanced approach.',
-                    category: 'offensive',
-                    unlockLevel: 1,
-                    effects: {
-                        damageModifier: 1.3,
-                        defenseModifier: 1.1,
-                        initiative: 7,
-                        rowPreference: 'front'
-                    }
-                }
-            ],
-            barbarian: [
-                {
-                    id: 'barbarian_rampage',
-                    name: 'Rampage',
-                    description: 'Charge forward with unstoppable fury. Maximum aggression.',
-                    category: 'offensive',
-                    unlockLevel: 1,
-                    effects: {
-                        damageModifier: 1.7,
-                        defenseModifier: 0.8,
-                        aggroMultiplier: 1.5,
-                        rowPreference: 'front'
-                    }
-                },
-                {
-                    id: 'barbarian_tank',
-                    name: 'Immovable Object',
-                    description: 'Soak up damage while dishing it back. Pure survivability.',
-                    category: 'defensive',
-                    unlockLevel: 1,
-                    effects: {
-                        defenseModifier: 1.5,
-                        damageModifier: 1.1,
-                        aggroMultiplier: 2.5,
-                        rowPreference: 'front'
-                    }
-                }
-            ],
-            paladin: [
-                {
-                    id: 'paladin_holy_avenger',
-                    name: 'Holy Avenger',
-                    description: 'Front-line fighter with divine power. Smite evil and protect good.',
-                    category: 'offensive',
-                    unlockLevel: 1,
-                    effects: {
-                        damageModifier: 1.3,
-                        defenseModifier: 1.2,
-                        healingMultiplier: 1.2,
-                        rowPreference: 'front'
-                    }
-                }
-            ],
-            warlock: [
-                {
-                    id: 'warlock_eldritch_blast',
-                    name: 'Eldritch Blast',
-                    description: 'Channel dark pact magic into devastating ranged attacks.',
-                    category: 'offensive',
-                    unlockLevel: 1,
-                    effects: {
-                        damageModifier: 1.6,
-                        range: 'long',
-                        rowPreference: 'back'
-                    }
-                }
-            ],
-            monk: [
-                {
-                    id: 'monk_way_of_fist',
-                    name: 'Way of the Open Hand',
-                    description: 'Fast, fluid strikes. High mobility and consistent damage.',
-                    category: 'offensive',
-                    unlockLevel: 1,
-                    effects: {
-                        damageModifier: 1.3,
-                        initiative: 20,
-                        defenseModifier: 1.2,
-                        rowPreference: 'front'
-                    }
-                }
-            ],
-            bard: [
-                {
-                    id: 'bard_inspiration',
-                    name: 'Inspiration',
-                    description: 'Boost allies with songs and stories. Pure support role.',
-                    category: 'support',
-                    unlockLevel: 1,
-                    effects: {
-                        damageModifier: 0.7,
-                        allyBuffMultiplier: 1.5,
-                        healingMultiplier: 1.3,
-                        rowPreference: 'back'
-                    }
-                }
-            ]
-        };
-
         this.state = {
-            gold: 1000,  // Starting gold for testing
+            gold: STARTING_GOLD,
             heroes: [],
             materials: {},
             inventory: [], // Loot items
             nextHeroId: 1,
             activeTab: 'heroes',
-            unlockedClasses: [0, 1, 2], // Fighter, Wizard, Rogue start unlocked
+            unlockedClasses: [...UNLOCKED_CLASSES_DEFAULT], // Fighter, Wizard, Rogue start unlocked
             battleParty: {
                 positions: [
                     // Front row (row 0)
@@ -726,7 +332,7 @@ class MerchantRPG {
     }
 
     getExpForLevel(level) {
-        return level * 100; // Simple formula: need 100/200/300... exp per level
+        return level * EXP_PER_LEVEL_MULTIPLIER;
     }
 
     // === Loot System Functions ===
@@ -1377,23 +983,13 @@ class MerchantRPG {
 
     // === Utilities ===
     formatTime(seconds) {
-        if (seconds < 60) {
-            return `${Math.floor(seconds)}s`;
-        } else if (seconds < 3600) {
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}m ${secs}s`;
-        } else {
-            const hours = Math.floor(seconds / 3600);
-            const mins = Math.floor((seconds % 3600) / 60);
-            return `${hours}h ${mins}m`;
-        }
+        return utilFormatTime(seconds);
     }
 
     // === Save/Load ===
     save() {
         try {
-            localStorage.setItem('merchantRPG_v2', JSON.stringify(this.state));
+            localStorage.setItem(SAVE_KEY, JSON.stringify(this.state));
         } catch (e) {
             console.error('Failed to save game:', e);
         }
@@ -1401,7 +997,7 @@ class MerchantRPG {
 
     load() {
         try {
-            const saved = localStorage.getItem('merchantRPG_v2');
+            const saved = localStorage.getItem(SAVE_KEY);
             if (saved) {
                 const loadedState = JSON.parse(saved);
                 // Merge with defaults to handle new properties
@@ -1424,7 +1020,7 @@ class MerchantRPG {
 
     reset() {
         if (confirm('Are you sure you want to reset all progress? This cannot be undone!')) {
-            localStorage.removeItem('merchantRPG_v2');
+            localStorage.removeItem(SAVE_KEY);
             location.reload();
         }
     }
