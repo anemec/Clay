@@ -25,6 +25,10 @@
                 <span class="tab-icon">⚔️</span>
                 <span class="tab-label">Heroes</span>
             </button>
+            <button class="tab" onclick="game.switchTab('party')">
+                <span class="tab-icon">🛡️</span>
+                <span class="tab-label">Party</span>
+            </button>
             <button class="tab" onclick="game.switchTab('quests')">
                 <span class="tab-icon">🗺️</span>
                 <span class="tab-label">Quests</span>
@@ -50,6 +54,33 @@
                 <div class="panel">
                     <h2 class="panel-title">Your Heroes (<span id="hero-count">0</span>)</h2>
                     <div id="heroes-list" class="heroes-list"></div>
+                </div>
+            </section>
+
+            <!-- Battle Party Tab -->
+            <section id="party-tab" class="tab-content">
+                <div class="panel">
+                    <h2 class="panel-title">Battle Party Formation</h2>
+                    <p class="panel-subtitle">Position your heroes on the battlefield and assign tactics</p>
+
+                    <div id="party-grid" class="party-grid">
+                        <!-- Front Row -->
+                        <div class="grid-row front-row">
+                            <div class="grid-label">Front</div>
+                            <div class="grid-position" data-position="0" onclick="game.openPartyPositionModal(0)"></div>
+                            <div class="grid-position" data-position="1" onclick="game.openPartyPositionModal(1)"></div>
+                            <div class="grid-position" data-position="2" onclick="game.openPartyPositionModal(2)"></div>
+                        </div>
+                        <!-- Back Row -->
+                        <div class="grid-row back-row">
+                            <div class="grid-label">Back</div>
+                            <div class="grid-position" data-position="3" onclick="game.openPartyPositionModal(3)"></div>
+                            <div class="grid-position" data-position="4" onclick="game.openPartyPositionModal(4)"></div>
+                            <div class="grid-position" data-position="5" onclick="game.openPartyPositionModal(5)"></div>
+                        </div>
+                    </div>
+
+                    <div id="party-warnings" class="party-warnings"></div>
                 </div>
             </section>
 
@@ -101,6 +132,36 @@
         </div>
     </div>
 
-    <script src="game.js?v=3"></script>
+    <!-- Party Position Modal -->
+    <div id="party-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-position-title">Party Position</h3>
+                <button class="modal-close" onclick="game.closePartyModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-position-info" class="position-info"></div>
+
+                <div class="hero-selection">
+                    <label>Select Hero:</label>
+                    <select id="modal-party-hero-select" class="hero-select">
+                        <option value="">- Remove Hero -</option>
+                    </select>
+                </div>
+
+                <div id="modal-tactic-selection" class="tactic-selection" style="display: none;">
+                    <label>Select Tactic:</label>
+                    <select id="modal-tactic-select" class="tactic-select"></select>
+                    <div id="modal-tactic-description" class="tactic-description"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="game.closePartyModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="game.savePartyPosition()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js?v=4"></script>
 </body>
 </html>

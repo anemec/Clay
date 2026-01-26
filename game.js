@@ -155,6 +155,283 @@ class MerchantRPG {
 
         this.nextItemId = 1; // For unique item IDs
 
+        // === Battle Party System ===
+        // Grid configuration: 2 rows x 3 columns = 6 positions
+        // Row 0 = Front row (melee range), Row 1 = Back row (ranged/support)
+        this.battlePartyGrid = {
+            rows: 2,
+            cols: 3
+        };
+
+        // === Tactics Library ===
+        // Each class has unique tactics with different playstyles
+        // Tactics unlock as heroes level up and affect battle behavior
+        this.tacticsLibrary = {
+            fighter: [
+                {
+                    id: 'fighter_shield_wall',
+                    name: 'Shield Wall',
+                    description: 'Hold the front line. Draw enemy aggression and protect allies behind you.',
+                    category: 'defensive',
+                    unlockLevel: 1,
+                    effects: {
+                        defenseModifier: 1.3,
+                        damageModifier: 0.9,
+                        aggroMultiplier: 2.0,
+                        rowPreference: 'front'
+                    }
+                },
+                {
+                    id: 'fighter_berserker',
+                    name: 'Berserker Rage',
+                    description: 'Charge into battle with reckless abandon. Maximum damage, minimum defense.',
+                    category: 'offensive',
+                    unlockLevel: 1,
+                    effects: {
+                        damageModifier: 1.4,
+                        defenseModifier: 0.7,
+                        initiative: 10,
+                        rowPreference: 'front'
+                    }
+                },
+                {
+                    id: 'fighter_tactical',
+                    name: 'Tactical Strike',
+                    description: 'Balance offense and defense. Adapt to battlefield conditions.',
+                    category: 'offensive',
+                    unlockLevel: 10,
+                    effects: {
+                        damageModifier: 1.2,
+                        defenseModifier: 1.1,
+                        criticalChance: 0.15,
+                        rowPreference: 'front'
+                    }
+                }
+            ],
+            wizard: [
+                {
+                    id: 'wizard_arcane_barrage',
+                    name: 'Arcane Barrage',
+                    description: 'Rain destruction from afar with powerful spells. Stay safe in the back.',
+                    category: 'offensive',
+                    unlockLevel: 1,
+                    effects: {
+                        damageModifier: 1.5,
+                        range: 'long',
+                        rowPreference: 'back'
+                    }
+                },
+                {
+                    id: 'wizard_crowd_control',
+                    name: 'Crowd Control',
+                    description: 'Focus on disabling multiple enemies rather than raw damage.',
+                    category: 'support',
+                    unlockLevel: 1,
+                    effects: {
+                        damageModifier: 0.8,
+                        aoeMultiplier: 1.5,
+                        rowPreference: 'back'
+                    }
+                },
+                {
+                    id: 'wizard_glass_cannon',
+                    name: 'Glass Cannon',
+                    description: 'Channel all power into devastating single-target spells.',
+                    category: 'offensive',
+                    unlockLevel: 15,
+                    effects: {
+                        damageModifier: 2.0,
+                        defenseModifier: 0.5,
+                        criticalChance: 0.25,
+                        rowPreference: 'back'
+                    }
+                }
+            ],
+            rogue: [
+                {
+                    id: 'rogue_shadow_strike',
+                    name: 'Shadow Strike',
+                    description: 'Sneak behind enemies for devastating surprise attacks from the shadows.',
+                    category: 'offensive',
+                    unlockLevel: 1,
+                    effects: {
+                        damageModifier: 1.6,
+                        criticalChance: 0.3,
+                        initiative: 15,
+                        targetPreference: 'back',
+                        rowPreference: 'front'
+                    }
+                },
+                {
+                    id: 'rogue_opportunist',
+                    name: 'Opportunist',
+                    description: 'Stay out of direct combat. Strike when enemies are vulnerable.',
+                    category: 'offensive',
+                    unlockLevel: 1,
+                    effects: {
+                        damageModifier: 1.3,
+                        criticalChance: 0.35,
+                        initiative: 8,
+                        rowPreference: 'back'
+                    }
+                },
+                {
+                    id: 'rogue_hit_and_run',
+                    name: 'Hit and Run',
+                    description: 'Quick strikes followed by tactical retreat. Minimize damage taken.',
+                    category: 'offensive',
+                    unlockLevel: 10,
+                    effects: {
+                        damageModifier: 1.2,
+                        defenseModifier: 1.3,
+                        initiative: 12,
+                        rowPreference: 'front'
+                    }
+                }
+            ],
+            cleric: [
+                {
+                    id: 'cleric_battle_healer',
+                    name: 'Battle Healer',
+                    description: 'Support allies from the front lines with healing and buffs.',
+                    category: 'support',
+                    unlockLevel: 1,
+                    effects: {
+                        healingMultiplier: 1.5,
+                        defenseModifier: 1.2,
+                        rowPreference: 'front'
+                    }
+                },
+                {
+                    id: 'cleric_divine_protection',
+                    name: 'Divine Protection',
+                    description: 'Stay back and provide maximum healing and shielding to the party.',
+                    category: 'support',
+                    unlockLevel: 1,
+                    effects: {
+                        healingMultiplier: 2.0,
+                        shieldMultiplier: 1.5,
+                        rowPreference: 'back'
+                    }
+                }
+            ],
+            ranger: [
+                {
+                    id: 'ranger_sniper',
+                    name: 'Sniper',
+                    description: 'Pick off enemies from maximum range with precise arrows.',
+                    category: 'offensive',
+                    unlockLevel: 1,
+                    effects: {
+                        damageModifier: 1.4,
+                        criticalChance: 0.25,
+                        range: 'long',
+                        rowPreference: 'back'
+                    }
+                },
+                {
+                    id: 'ranger_hunter',
+                    name: 'Hunter',
+                    description: 'Track and engage enemies at medium range. Balanced approach.',
+                    category: 'offensive',
+                    unlockLevel: 1,
+                    effects: {
+                        damageModifier: 1.3,
+                        defenseModifier: 1.1,
+                        initiative: 7,
+                        rowPreference: 'front'
+                    }
+                }
+            ],
+            barbarian: [
+                {
+                    id: 'barbarian_rampage',
+                    name: 'Rampage',
+                    description: 'Charge forward with unstoppable fury. Maximum aggression.',
+                    category: 'offensive',
+                    unlockLevel: 1,
+                    effects: {
+                        damageModifier: 1.7,
+                        defenseModifier: 0.8,
+                        aggroMultiplier: 1.5,
+                        rowPreference: 'front'
+                    }
+                },
+                {
+                    id: 'barbarian_tank',
+                    name: 'Immovable Object',
+                    description: 'Soak up damage while dishing it back. Pure survivability.',
+                    category: 'defensive',
+                    unlockLevel: 1,
+                    effects: {
+                        defenseModifier: 1.5,
+                        damageModifier: 1.1,
+                        aggroMultiplier: 2.5,
+                        rowPreference: 'front'
+                    }
+                }
+            ],
+            paladin: [
+                {
+                    id: 'paladin_holy_avenger',
+                    name: 'Holy Avenger',
+                    description: 'Front-line fighter with divine power. Smite evil and protect good.',
+                    category: 'offensive',
+                    unlockLevel: 1,
+                    effects: {
+                        damageModifier: 1.3,
+                        defenseModifier: 1.2,
+                        healingMultiplier: 1.2,
+                        rowPreference: 'front'
+                    }
+                }
+            ],
+            warlock: [
+                {
+                    id: 'warlock_eldritch_blast',
+                    name: 'Eldritch Blast',
+                    description: 'Channel dark pact magic into devastating ranged attacks.',
+                    category: 'offensive',
+                    unlockLevel: 1,
+                    effects: {
+                        damageModifier: 1.6,
+                        range: 'long',
+                        rowPreference: 'back'
+                    }
+                }
+            ],
+            monk: [
+                {
+                    id: 'monk_way_of_fist',
+                    name: 'Way of the Open Hand',
+                    description: 'Fast, fluid strikes. High mobility and consistent damage.',
+                    category: 'offensive',
+                    unlockLevel: 1,
+                    effects: {
+                        damageModifier: 1.3,
+                        initiative: 20,
+                        defenseModifier: 1.2,
+                        rowPreference: 'front'
+                    }
+                }
+            ],
+            bard: [
+                {
+                    id: 'bard_inspiration',
+                    name: 'Inspiration',
+                    description: 'Boost allies with songs and stories. Pure support role.',
+                    category: 'support',
+                    unlockLevel: 1,
+                    effects: {
+                        damageModifier: 0.7,
+                        allyBuffMultiplier: 1.5,
+                        healingMultiplier: 1.3,
+                        rowPreference: 'back'
+                    }
+                }
+            ]
+        };
+
         this.state = {
             gold: 1000,  // Starting gold for testing
             heroes: [],
@@ -162,7 +439,19 @@ class MerchantRPG {
             inventory: [], // Loot items
             nextHeroId: 1,
             activeTab: 'heroes',
-            unlockedClasses: [0, 1, 2] // Fighter, Wizard, Rogue start unlocked
+            unlockedClasses: [0, 1, 2], // Fighter, Wizard, Rogue start unlocked
+            battleParty: {
+                positions: [
+                    // Front row (row 0)
+                    { row: 0, col: 0, heroId: null, tacticId: null },
+                    { row: 0, col: 1, heroId: null, tacticId: null },
+                    { row: 0, col: 2, heroId: null, tacticId: null },
+                    // Back row (row 1)
+                    { row: 1, col: 0, heroId: null, tacticId: null },
+                    { row: 1, col: 1, heroId: null, tacticId: null },
+                    { row: 1, col: 2, heroId: null, tacticId: null }
+                ]
+            }
         };
 
         this.currentQuest = null; // For modal
@@ -235,6 +524,38 @@ class MerchantRPG {
     }
 
     // === Hero Management ===
+    // Internal method to create a hero (can be used by tests)
+    createHero(classIndex) {
+        const template = this.heroTemplates[classIndex];
+        if (!template) return null;
+
+        const hero = {
+            id: this.state.nextHeroId++,
+            classIndex: classIndex,
+            name: `${template.name} #${this.state.nextHeroId - 1}`,
+            level: 1,
+            exp: 0,
+            hp: template.hp,
+            maxHp: template.hp,
+            atk: template.atk,
+            def: template.def,
+            mdef: template.mdef,
+            crit: template.crit,
+            status: 'idle', // 'idle' or 'questing'
+            questId: null,
+            questStartTime: null,
+            questDuration: null,
+            unlockedTactics: [] // Initialize empty tactics array
+        };
+
+        this.state.heroes.push(hero);
+
+        // Unlock tactics for new hero
+        this.checkTacticUnlocks(hero);
+
+        return hero;
+    }
+
     hireHero() {
         const selectElement = document.getElementById('hero-class-select');
         const classIndex = parseInt(selectElement.value);
@@ -252,26 +573,9 @@ class MerchantRPG {
             return;
         }
 
-        const hero = {
-            id: this.state.nextHeroId++,
-            classIndex: classIndex,
-            name: `${template.name} #${this.state.nextHeroId - 1}`,
-            level: 1,
-            exp: 0,
-            hp: template.hp,
-            maxHp: template.hp,
-            atk: template.atk,
-            def: template.def,
-            mdef: template.mdef,
-            crit: template.crit,
-            status: 'idle', // 'idle' or 'questing'
-            questId: null,
-            questStartTime: null,
-            questDuration: null
-        };
-
         this.state.gold -= cost;
-        this.state.heroes.push(hero);
+        this.createHero(classIndex);
+
         this.save();
         this.render();
     }
@@ -414,9 +718,10 @@ class MerchantRPG {
             hero.def += template.defPlv[tier];
         }
 
-        // Check for hero unlocks after leveling
+        // Check for hero and tactic unlocks after leveling
         if (leveledUp) {
             this.checkHeroUnlocks();
+            this.checkTacticUnlocks(hero);
         }
     }
 
@@ -535,6 +840,188 @@ class MerchantRPG {
         return loot;
     }
 
+    // === Battle Party System Functions ===
+
+    // Add hero to specific party position
+    addHeroToParty(heroId, position) {
+        if (position < 0 || position >= 6) return false;
+
+        const hero = this.state.heroes.find(h => h.id === heroId);
+        if (!hero) return false;
+
+        // Check if hero already in party
+        const alreadyInParty = this.state.battleParty.positions.some(p => p.heroId === heroId);
+        if (alreadyInParty) return false;
+
+        // Check if position is occupied
+        if (this.state.battleParty.positions[position].heroId !== null) return false;
+
+        // Add hero to position
+        this.state.battleParty.positions[position].heroId = heroId;
+        this.save();
+        return true;
+    }
+
+    // Remove hero from party position
+    removeHeroFromParty(position) {
+        if (position < 0 || position >= 6) return false;
+
+        this.state.battleParty.positions[position].heroId = null;
+        this.state.battleParty.positions[position].tacticId = null;
+        this.save();
+        return true;
+    }
+
+    // Swap heroes between two positions
+    swapPartyPositions(pos1, pos2) {
+        if (pos1 < 0 || pos1 >= 6 || pos2 < 0 || pos2 >= 6) return false;
+
+        const temp = { ...this.state.battleParty.positions[pos1] };
+        this.state.battleParty.positions[pos1].heroId = this.state.battleParty.positions[pos2].heroId;
+        this.state.battleParty.positions[pos1].tacticId = this.state.battleParty.positions[pos2].tacticId;
+        this.state.battleParty.positions[pos2].heroId = temp.heroId;
+        this.state.battleParty.positions[pos2].tacticId = temp.tacticId;
+
+        this.save();
+        return true;
+    }
+
+    // Get list of heroes currently in party
+    getPartyHeroes() {
+        const partyHeroes = [];
+        this.state.battleParty.positions.forEach(pos => {
+            if (pos.heroId !== null) {
+                const hero = this.state.heroes.find(h => h.id === pos.heroId);
+                if (hero) partyHeroes.push(hero);
+            }
+        });
+        return partyHeroes;
+    }
+
+    // Check if party is ready for battle (at least 1 hero)
+    isPartyReady() {
+        return this.state.battleParty.positions.some(p => p.heroId !== null);
+    }
+
+    // Check if position is in front row
+    isFrontRow(position) {
+        return this.state.battleParty.positions[position]?.row === 0;
+    }
+
+    // Get warnings about suboptimal party positioning
+    getPartyWarnings() {
+        const warnings = [];
+
+        this.state.battleParty.positions.forEach((pos, index) => {
+            if (pos.heroId === null || pos.tacticId === null) return;
+
+            const hero = this.state.heroes.find(h => h.id === pos.heroId);
+            if (!hero) return;
+
+            const tactic = this.getActiveTactic(index);
+            if (!tactic) return;
+
+            // Check row preference mismatch
+            const isFront = pos.row === 0;
+            if (tactic.effects.rowPreference === 'front' && !isFront) {
+                warnings.push({
+                    position: index,
+                    message: `${hero.name} prefers front row with ${tactic.name} tactic`
+                });
+            } else if (tactic.effects.rowPreference === 'back' && isFront) {
+                warnings.push({
+                    position: index,
+                    message: `${hero.name} prefers back row with ${tactic.name} tactic`
+                });
+            }
+        });
+
+        return warnings;
+    }
+
+    // === Tactics System Functions ===
+
+    // Check and unlock tactics for a hero based on level
+    checkTacticUnlocks(hero) {
+        if (!hero.unlockedTactics) {
+            hero.unlockedTactics = [];
+        }
+
+        // Validate hero has valid classIndex
+        if (hero.classIndex === undefined || !this.heroTemplates[hero.classIndex]) {
+            return;
+        }
+
+        const className = this.heroTemplates[hero.classIndex].name.toLowerCase();
+        const classTactics = this.tacticsLibrary[className];
+
+        if (!classTactics) return;
+
+        classTactics.forEach(tactic => {
+            // Unlock if hero meets level requirement and doesn't have it yet
+            if (tactic.unlockLevel <= hero.level && !hero.unlockedTactics.includes(tactic.id)) {
+                hero.unlockedTactics.push(tactic.id);
+            }
+        });
+    }
+
+    // Get all available (unlocked) tactics for a hero
+    getAvailableTactics(hero) {
+        if (!hero.unlockedTactics) return [];
+
+        const className = this.heroTemplates[hero.classIndex].name.toLowerCase();
+        const classTactics = this.tacticsLibrary[className] || [];
+
+        return classTactics.filter(tactic => hero.unlockedTactics.includes(tactic.id));
+    }
+
+    // Check if hero can use specific tactic
+    canUseTactic(hero, tacticId) {
+        return hero.unlockedTactics && hero.unlockedTactics.includes(tacticId);
+    }
+
+    // Assign tactic to hero in party position
+    assignTacticToPartyHero(position, tacticId) {
+        if (position < 0 || position >= 6) return false;
+
+        const pos = this.state.battleParty.positions[position];
+        if (pos.heroId === null) return false;
+
+        const hero = this.state.heroes.find(h => h.id === pos.heroId);
+        if (!hero) return false;
+
+        // Verify hero has this tactic unlocked
+        if (!this.canUseTactic(hero, tacticId)) return false;
+
+        // Verify tactic belongs to hero's class
+        const className = this.heroTemplates[hero.classIndex].name.toLowerCase();
+        const classTactics = this.tacticsLibrary[className] || [];
+        const tactic = classTactics.find(t => t.id === tacticId);
+
+        if (!tactic) return false;
+
+        // Assign tactic
+        pos.tacticId = tacticId;
+        this.save();
+        return true;
+    }
+
+    // Get active tactic for a party position
+    getActiveTactic(position) {
+        if (position < 0 || position >= 6) return null;
+
+        const pos = this.state.battleParty.positions[position];
+        if (pos.tacticId === null) return null;
+
+        // Find tactic in library
+        for (const className in this.tacticsLibrary) {
+            const tactic = this.tacticsLibrary[className].find(t => t.id === pos.tacticId);
+            if (tactic) return tactic;
+        }
+
+        return null;
+    }
+
     // === Game Loop ===
     updateGameState() {
         const now = Date.now();
@@ -582,6 +1069,8 @@ class MerchantRPG {
         // Render based on active tab
         if (this.state.activeTab === 'heroes') {
             this.renderHeroes();
+        } else if (this.state.activeTab === 'party') {
+            this.renderParty();
         } else if (this.state.activeTab === 'quests') {
             this.renderQuests();
         } else if (this.state.activeTab === 'materials') {
@@ -717,6 +1206,175 @@ class MerchantRPG {
         materialsListElement.innerHTML = materialsHtml;
     }
 
+    renderParty() {
+        // Render grid positions
+        this.state.battleParty.positions.forEach((pos, index) => {
+            const posElement = document.querySelector(`[data-position="${index}"]`);
+            if (!posElement) return;
+
+            if (pos.heroId === null) {
+                // Empty position
+                posElement.innerHTML = '<div class="empty-slot">Empty</div>';
+                posElement.classList.remove('filled');
+            } else {
+                // Filled position
+                const hero = this.state.heroes.find(h => h.id === pos.heroId);
+                if (!hero) return;
+
+                const template = this.heroTemplates[hero.classIndex];
+                const tactic = this.getActiveTactic(index);
+
+                posElement.classList.add('filled');
+                posElement.innerHTML = `
+                    <div class="position-hero-name">${hero.name}</div>
+                    <div class="position-hero-class">${template.name} Lv.${hero.level}</div>
+                    ${tactic ? `<div class="position-tactic ${tactic.category}">${tactic.name}</div>` : '<div class="position-tactic">No tactic</div>'}
+                `;
+            }
+        });
+
+        // Render warnings
+        const warnings = this.getPartyWarnings();
+        const warningsElement = document.getElementById('party-warnings');
+        if (warnings.length === 0) {
+            warningsElement.innerHTML = '';
+        } else {
+            warningsElement.innerHTML = warnings.map(w =>
+                `<div class="party-warning">⚠️ ${w.message}</div>`
+            ).join('');
+        }
+    }
+
+    // Party Modal Management
+    openPartyPositionModal(position) {
+        this.currentPartyPosition = position;
+        const pos = this.state.battleParty.positions[position];
+        const row = pos.row === 0 ? 'Front Row' : 'Back Row';
+        const col = pos.col + 1;
+
+        document.getElementById('modal-position-title').textContent = `${row} - Position ${col}`;
+        document.getElementById('modal-position-info').textContent =
+            `Configure hero and tactic for this position. ${row === 'Front Row' ? 'Front row heroes engage enemies directly.' : 'Back row heroes provide ranged support.'}`;
+
+        // Populate hero select
+        const heroSelect = document.getElementById('modal-party-hero-select');
+        const availableHeroes = this.state.heroes.filter(h => {
+            // Hero is either in this position, or not in any position
+            return h.status === 'idle' && (
+                pos.heroId === h.id ||
+                !this.state.battleParty.positions.some(p => p.heroId === h.id)
+            );
+        });
+
+        heroSelect.innerHTML = '<option value="">- Remove Hero -</option>' +
+            availableHeroes.map(hero => {
+                const template = this.heroTemplates[hero.classIndex];
+                return `<option value="${hero.id}" ${pos.heroId === hero.id ? 'selected' : ''}>
+                    ${hero.name} (${template.name} Lv.${hero.level})
+                </option>`;
+            }).join('');
+
+        // Handle hero selection change
+        heroSelect.onchange = () => {
+            this.updateTacticSelection();
+        };
+
+        // Initial tactic update
+        this.updateTacticSelection();
+
+        // Show modal
+        document.getElementById('party-modal').classList.add('active');
+    }
+
+    updateTacticSelection() {
+        const heroSelect = document.getElementById('modal-party-hero-select');
+        const heroId = parseInt(heroSelect.value);
+        const tacticSection = document.getElementById('modal-tactic-selection');
+        const tacticSelect = document.getElementById('modal-tactic-select');
+        const tacticDesc = document.getElementById('modal-tactic-description');
+
+        if (!heroId) {
+            tacticSection.style.display = 'none';
+            return;
+        }
+
+        const hero = this.state.heroes.find(h => h.id === heroId);
+        if (!hero) return;
+
+        tacticSection.style.display = 'block';
+
+        // Get available tactics
+        const tactics = this.getAvailableTactics(hero);
+        const pos = this.state.battleParty.positions[this.currentPartyPosition];
+
+        tacticSelect.innerHTML = '<option value="">- No Tactic -</option>' +
+            tactics.map(tactic =>
+                `<option value="${tactic.id}" ${pos.tacticId === tactic.id ? 'selected' : ''}>
+                    ${tactic.name} (Lv.${tactic.unlockLevel})
+                </option>`
+            ).join('');
+
+        // Show tactic description on selection
+        tacticSelect.onchange = () => {
+            const tacticId = tacticSelect.value;
+            if (!tacticId) {
+                tacticDesc.innerHTML = '';
+                return;
+            }
+
+            const tactic = tactics.find(t => t.id === tacticId);
+            if (!tactic) return;
+
+            tacticDesc.innerHTML = `
+                <div><span class="tactic-category ${tactic.category}">${tactic.category.toUpperCase()}</span></div>
+                <div style="margin-top: 8px;">${tactic.description}</div>
+            `;
+        };
+
+        // Trigger initial description update
+        tacticSelect.onchange();
+    }
+
+    savePartyPosition() {
+        const position = this.currentPartyPosition;
+        const heroSelect = document.getElementById('modal-party-hero-select');
+        const tacticSelect = document.getElementById('modal-tactic-select');
+
+        const heroId = parseInt(heroSelect.value) || null;
+        const tacticId = tacticSelect.value || null;
+
+        // Remove hero from this position if empty
+        if (heroId === null) {
+            this.removeHeroFromParty(position);
+        } else {
+            // Remove hero from any other position first
+            this.state.battleParty.positions.forEach((p, i) => {
+                if (p.heroId === heroId && i !== position) {
+                    this.removeHeroFromParty(i);
+                }
+            });
+
+            // Add to this position
+            this.addHeroToParty(heroId, position);
+
+            // Assign tactic if selected
+            if (tacticId) {
+                this.assignTacticToPartyHero(position, tacticId);
+            } else {
+                this.state.battleParty.positions[position].tacticId = null;
+            }
+        }
+
+        this.save();
+        this.closePartyModal();
+        this.render();
+    }
+
+    closePartyModal() {
+        document.getElementById('party-modal').classList.remove('active');
+        this.currentPartyPosition = null;
+    }
+
     // === Utilities ===
     formatTime(seconds) {
         if (seconds < 60) {
@@ -748,6 +1406,16 @@ class MerchantRPG {
                 const loadedState = JSON.parse(saved);
                 // Merge with defaults to handle new properties
                 this.state = { ...this.state, ...loadedState };
+
+                // Backwards compatibility: Initialize unlockedTactics for existing heroes
+                if (this.state.heroes) {
+                    this.state.heroes.forEach(hero => {
+                        if (!hero.unlockedTactics) {
+                            hero.unlockedTactics = [];
+                            this.checkTacticUnlocks(hero);
+                        }
+                    });
+                }
             }
         } catch (e) {
             console.error('Failed to load game:', e);
