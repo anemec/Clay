@@ -12,7 +12,10 @@ const localStorageMock = (() => {
     };
 })();
 
-global.localStorage = localStorageMock;
+Object.defineProperty(globalThis, 'localStorage', {
+    value: localStorageMock,
+    configurable: true
+});
 
 // Mock DOM elements
 global.document = {

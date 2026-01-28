@@ -65,12 +65,14 @@ describe('Loot System - Item Generation', () => {
     });
 
     it('should scale item level with quest level', () => {
+        vi.spyOn(Math, 'random').mockReturnValue(0.99);
         const level5Item = game.generateLoot(5);
         const level20Item = game.generateLoot(20);
 
         expect(level5Item.level).toBe(5);
         expect(level20Item.level).toBe(20);
         expect(level20Item.value).toBeGreaterThan(level5Item.value);
+        vi.restoreAllMocks();
     });
 });
 

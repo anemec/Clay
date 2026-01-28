@@ -47,24 +47,24 @@ class MerchantRPG {
     currentQuest: unknown;
     lastUnlockedClasses: number[];
 
-    load!: () => void;
-    updateGameState!: () => void;
-    render!: () => void;
-    startGameLoop!: () => void;
-    switchTab!: (tabName: string, target?: HTMLElement | null) => void;
-    openQuestModal!: (questId: number) => void;
-    openPartyPositionModal!: (position: number) => void;
-    hireHero!: () => void;
-    save!: () => void;
-    reset!: () => void;
-    closeQuestModal!: () => void;
-    startQuest!: () => void;
-    closePartyModal!: () => void;
-    savePartyPosition!: () => void;
-    equipItem!: (itemId: number, heroId: number) => void;
-    unequipItem!: (slot: string, heroId: number, options?: { silent?: boolean }) => void;
-    craftItem!: (recipeId: number) => void;
-    selectEquipmentHero!: (heroId: number) => void;
+    declare load: () => void;
+    declare updateGameState: () => void;
+    declare render: () => void;
+    declare startGameLoop: () => void;
+    declare switchTab: (tabName: string, target?: HTMLElement | null) => void;
+    declare openQuestModal: (questId: number) => void;
+    declare openPartyPositionModal: (position: number) => void;
+    declare hireHero: () => void;
+    declare save: () => void;
+    declare reset: () => void;
+    declare closeQuestModal: () => void;
+    declare startQuest: () => void;
+    declare closePartyModal: () => void;
+    declare savePartyPosition: () => void;
+    declare equipItem: (itemId: number, heroId: number) => void;
+    declare unequipItem: (slot: string, heroId: number, options?: { silent?: boolean }) => void;
+    declare craftItem: (recipeId: number) => void;
+    declare selectEquipmentHero: (heroId: number) => void;
 
     constructor(options: { skipInit?: boolean } = {}) {
         // Options for testing
