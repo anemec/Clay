@@ -9,13 +9,22 @@ function bindUI(gameInstance: MerchantRPG) {
 
         switch (action) {
             case 'switchTab':
-                gameInstance.switchTab(target.dataset.tab ?? 'heroes');
+                gameInstance.switchTab(target.dataset.tab ?? 'heroes', target);
                 break;
             case 'openQuestModal':
                 gameInstance.openQuestModal(Number(target.dataset.questId));
                 break;
             case 'openPartyPositionModal':
                 gameInstance.openPartyPositionModal(Number(target.dataset.position));
+                break;
+            case 'equipItem':
+                gameInstance.equipItem(Number(target.dataset.itemId), Number(target.dataset.heroId));
+                break;
+            case 'unequipItem':
+                gameInstance.unequipItem(target.dataset.slot ?? '', Number(target.dataset.heroId));
+                break;
+            case 'craftItem':
+                gameInstance.craftItem(Number(target.dataset.recipeId));
                 break;
             case 'hireHero':
             case 'save':
@@ -26,6 +35,23 @@ function bindUI(gameInstance: MerchantRPG) {
             case 'savePartyPosition':
                 gameInstance[action]();
                 break;
+            default:
+                break;
+        }
+    });
+
+    document.addEventListener('change', (event) => {
+        const target = (event.target as HTMLElement | null)?.closest('[data-action]') as HTMLElement | null;
+        if (!target) return;
+
+        const action = target.dataset.action;
+
+        switch (action) {
+            case 'selectEquipmentHero': {
+                const select = target as HTMLSelectElement;
+                gameInstance.selectEquipmentHero(Number(select.value));
+                break;
+            }
             default:
                 break;
         }

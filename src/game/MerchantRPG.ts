@@ -9,7 +9,8 @@ import {
     lootRarities,
     itemTypes,
     lootTables,
-    battlePartyGrid
+    battlePartyGrid,
+    craftingRecipes
 } from '../data/index';
 
 import {
@@ -28,6 +29,7 @@ import { tabMethods } from './methods/tabs';
 import { utilsMethods } from './methods/utils';
 import { persistenceMethods } from './methods/persistence';
 import { loopMethods } from './methods/loop';
+import { equipmentMethods } from './methods/equipment';
 
 class MerchantRPG {
     constructor(options = {}) {
@@ -42,6 +44,7 @@ class MerchantRPG {
         this.itemTypes = itemTypes;
         this.lootTables = lootTables;
         this.battlePartyGrid = battlePartyGrid;
+        this.craftingRecipes = craftingRecipes;
 
         this.expPerLevelMultiplier = EXP_PER_LEVEL_MULTIPLIER;
         this.nextItemId = 1; // For unique item IDs
@@ -53,6 +56,7 @@ class MerchantRPG {
             inventory: [], // Loot items
             nextHeroId: 1,
             activeTab: 'heroes',
+            selectedEquipmentHeroId: null,
             unlockedClasses: [...UNLOCKED_CLASSES_DEFAULT], // Fighter, Wizard, Rogue start unlocked
             battleParty: {
                 positions: [
@@ -93,7 +97,8 @@ Object.assign(
     tabMethods,
     utilsMethods,
     persistenceMethods,
-    loopMethods
+    loopMethods,
+    equipmentMethods
 );
 
 export { MerchantRPG };

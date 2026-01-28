@@ -7,3 +7,4 @@ export { heroTemplates } from './heroTemplates';
 export { questTemplates } from './questTemplates';
 export { tacticsLibrary } from './tacticsLibrary';
 export { lootRarities, itemTypes, lootTables, battlePartyGrid } from './lootTables';
+export { craftingRecipes } from './craftingRecipes';

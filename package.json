@@ -8,10 +8,16 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
+    "prepare": "husky install",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "eslint --fix"
+    ]
   },
   "keywords": [
     "game",
@@ -22,12 +28,16 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
     "@vitest/coverage-v8": "^1.0.0",
     "@vitest/ui": "^1.0.0",
-    "@types/node": "^22.10.0",
     "eslint": "^9.39.2",
     "globals": "^17.2.0",
     "happy-dom": "^12.10.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "typescript": "^5.7.3",
     "vite": "^5.4.11",
     "vitest": "^1.0.0"

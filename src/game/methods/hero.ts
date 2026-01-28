@@ -80,6 +80,7 @@ export const heroMethods = {
             questId: null,
             questStartTime: null,
             questDuration: null,
+            equipment: { weapon: null, armor: null },
             unlockedTactics: [] // Initialize empty tactics array
         };
 

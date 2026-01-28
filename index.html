@@ -33,6 +33,14 @@
                 <span class="tab-icon">🗺️</span>
                 <span class="tab-label">Quests</span>
             </button>
+            <button class="tab" data-action="switchTab" data-tab="equipment">
+                <span class="tab-icon">🧰</span>
+                <span class="tab-label">Equipment</span>
+            </button>
+            <button class="tab" data-action="switchTab" data-tab="crafting">
+                <span class="tab-icon">🛠️</span>
+                <span class="tab-label">Crafting</span>
+            </button>
             <button class="tab" data-action="switchTab" data-tab="materials">
                 <span class="tab-icon">📦</span>
                 <span class="tab-label">Materials</span>
@@ -89,6 +97,35 @@
                 <div class="panel">
                     <h2 class="panel-title">Available Quests</h2>
                     <div id="quests-list" class="quests-list"></div>
+                </div>
+            </section>
+
+            <!-- Equipment Tab -->
+            <section id="equipment-tab" class="tab-content">
+                <div class="panel">
+                    <h2 class="panel-title">Equipment Management</h2>
+                    <div class="hero-selection">
+                        <label>Select Hero:</label>
+                        <select id="equipment-hero-select" class="hero-select" data-action="selectEquipmentHero"></select>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2 class="panel-title">Equipped Items</h2>
+                    <div id="equipment-slots" class="equipment-slots"></div>
+                </div>
+
+                <div class="panel">
+                    <h2 class="panel-title">Equipment Inventory</h2>
+                    <div id="equipment-inventory" class="equipment-inventory"></div>
+                </div>
+            </section>
+
+            <!-- Crafting Tab -->
+            <section id="crafting-tab" class="tab-content">
+                <div class="panel">
+                    <h2 class="panel-title">Crafting Recipes</h2>
+                    <div id="crafting-recipes" class="crafting-list"></div>
                 </div>
             </section>
 

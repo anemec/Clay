@@ -25,6 +25,9 @@ export const persistenceMethods = {
                             hero.unlockedTactics = [];
                             this.checkTacticUnlocks(hero);
                         }
+                        if (!hero.equipment) {
+                            hero.equipment = { weapon: null, armor: null };
+                        }
                     });
                 }
             }
