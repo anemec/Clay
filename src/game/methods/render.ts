@@ -189,16 +189,6 @@ export const renderMethods = {
             adventureStatus.innerHTML = `<div class="panel"><div class="panel-title">Status</div><div>${outcome}</div></div>`;
         }
 
-        const legend = `
-            <div class="adventure-log-filters">
-                <label><input type="checkbox" data-action="filterAdventureLog" data-filter="battle" ${logFilters.battle ? 'checked' : ''}> <span class="adventure-log-chip adventure-log-battle">Battle</span></label>
-                <label><input type="checkbox" data-action="filterAdventureLog" data-filter="encounter" ${logFilters.encounter ? 'checked' : ''}> <span class="adventure-log-chip adventure-log-encounter">Encounter</span></label>
-                <label><input type="checkbox" data-action="filterAdventureLog" data-filter="opportunity" ${logFilters.opportunity ? 'checked' : ''}> <span class="adventure-log-chip adventure-log-opportunity">Opportunity</span></label>
-                <label><input type="checkbox" data-action="filterAdventureLog" data-filter="resource" ${logFilters.resource ? 'checked' : ''}> <span class="adventure-log-chip adventure-log-resource">Resource</span></label>
-                <label><input type="checkbox" data-action="filterAdventureLog" data-filter="status" ${logFilters.status ? 'checked' : ''}> <span class="adventure-log-chip adventure-log-status">Status</span></label>
-            </div>
-        `;
-
         if (heroes.length === 0) {
             adventureList.innerHTML = '<div class="empty-state">Hire heroes to start an adventure.</div>';
         } else {
@@ -230,7 +220,6 @@ export const renderMethods = {
             }).join('');
         }
 
-        const logEntries = this.state.adventure?.log || [];
         const logFilters = this.state.adventure?.logFilters || {
             battle: true,
             encounter: true,
@@ -238,6 +227,17 @@ export const renderMethods = {
             resource: true,
             status: true
         };
+        const legend = `
+            <div class="adventure-log-filters">
+                <label><input type="checkbox" data-action="filterAdventureLog" data-filter="battle" ${logFilters.battle ? 'checked' : ''}> <span class="adventure-log-chip adventure-log-battle">Battle</span></label>
+                <label><input type="checkbox" data-action="filterAdventureLog" data-filter="encounter" ${logFilters.encounter ? 'checked' : ''}> <span class="adventure-log-chip adventure-log-encounter">Encounter</span></label>
+                <label><input type="checkbox" data-action="filterAdventureLog" data-filter="opportunity" ${logFilters.opportunity ? 'checked' : ''}> <span class="adventure-log-chip adventure-log-opportunity">Opportunity</span></label>
+                <label><input type="checkbox" data-action="filterAdventureLog" data-filter="resource" ${logFilters.resource ? 'checked' : ''}> <span class="adventure-log-chip adventure-log-resource">Resource</span></label>
+                <label><input type="checkbox" data-action="filterAdventureLog" data-filter="status" ${logFilters.status ? 'checked' : ''}> <span class="adventure-log-chip adventure-log-status">Status</span></label>
+            </div>
+        `;
+
+        const logEntries = this.state.adventure?.log || [];
         if (logEntries.length === 0) {
             adventureLog.innerHTML = `${legend}<div class="empty-state">No adventure log entries yet.</div>`;
         } else {
