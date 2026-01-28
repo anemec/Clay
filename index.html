@@ -21,19 +21,19 @@
 
         <!-- Tab Navigation -->
         <nav class="tabs">
-            <button class="tab active" onclick="game.switchTab('heroes')">
+            <button class="tab active" data-action="switchTab" data-tab="heroes">
                 <span class="tab-icon">⚔️</span>
                 <span class="tab-label">Heroes</span>
             </button>
-            <button class="tab" onclick="game.switchTab('party')">
+            <button class="tab" data-action="switchTab" data-tab="party">
                 <span class="tab-icon">🛡️</span>
                 <span class="tab-label">Party</span>
             </button>
-            <button class="tab" onclick="game.switchTab('quests')">
+            <button class="tab" data-action="switchTab" data-tab="quests">
                 <span class="tab-icon">🗺️</span>
                 <span class="tab-label">Quests</span>
             </button>
-            <button class="tab" onclick="game.switchTab('materials')">
+            <button class="tab" data-action="switchTab" data-tab="materials">
                 <span class="tab-icon">📦</span>
                 <span class="tab-label">Materials</span>
             </button>
@@ -47,7 +47,7 @@
                     <h2 class="panel-title">Hire Hero</h2>
                     <div class="hero-hire">
                         <select id="hero-class-select" class="hero-select"></select>
-                        <button class="btn btn-primary" onclick="game.hireHero()">Hire Hero</button>
+                        <button class="btn btn-primary" data-action="hireHero">Hire Hero</button>
                     </div>
                 </div>
 
@@ -67,16 +67,16 @@
                         <!-- Front Row -->
                         <div class="grid-row front-row">
                             <div class="grid-label">Front</div>
-                            <div class="grid-position" data-position="0" onclick="game.openPartyPositionModal(0)"></div>
-                            <div class="grid-position" data-position="1" onclick="game.openPartyPositionModal(1)"></div>
-                            <div class="grid-position" data-position="2" onclick="game.openPartyPositionModal(2)"></div>
+                            <div class="grid-position" data-position="0" data-action="openPartyPositionModal"></div>
+                            <div class="grid-position" data-position="1" data-action="openPartyPositionModal"></div>
+                            <div class="grid-position" data-position="2" data-action="openPartyPositionModal"></div>
                         </div>
                         <!-- Back Row -->
                         <div class="grid-row back-row">
                             <div class="grid-label">Back</div>
-                            <div class="grid-position" data-position="3" onclick="game.openPartyPositionModal(3)"></div>
-                            <div class="grid-position" data-position="4" onclick="game.openPartyPositionModal(4)"></div>
-                            <div class="grid-position" data-position="5" onclick="game.openPartyPositionModal(5)"></div>
+                            <div class="grid-position" data-position="3" data-action="openPartyPositionModal"></div>
+                            <div class="grid-position" data-position="4" data-action="openPartyPositionModal"></div>
+                            <div class="grid-position" data-position="5" data-action="openPartyPositionModal"></div>
                         </div>
                     </div>
 
@@ -103,8 +103,8 @@
 
         <!-- Footer -->
         <footer class="footer">
-            <button class="btn btn-secondary" onclick="game.save()">💾 Save</button>
-            <button class="btn btn-secondary" onclick="game.reset()">🔄 Reset</button>
+            <button class="btn btn-secondary" data-action="save">💾 Save</button>
+            <button class="btn btn-secondary" data-action="reset">🔄 Reset</button>
             <div class="attribution">
                 Game data from <a href="https://github.com/Benzeliden/MerchantGameDB" target="_blank">MerchantGameDB</a>
             </div>
@@ -116,7 +116,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="modal-quest-name">Quest Name</h3>
-                <button class="modal-close" onclick="game.closeQuestModal()">✕</button>
+                <button class="modal-close" data-action="closeQuestModal">✕</button>
             </div>
             <div class="modal-body">
                 <div id="modal-quest-details"></div>
@@ -126,8 +126,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="game.closeQuestModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="game.startQuest()">Start Quest</button>
+                <button class="btn btn-secondary" data-action="closeQuestModal">Cancel</button>
+                <button class="btn btn-primary" data-action="startQuest">Start Quest</button>
             </div>
         </div>
     </div>
@@ -137,7 +137,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="modal-position-title">Party Position</h3>
-                <button class="modal-close" onclick="game.closePartyModal()">✕</button>
+                <button class="modal-close" data-action="closePartyModal">✕</button>
             </div>
             <div class="modal-body">
                 <div id="modal-position-info" class="position-info"></div>
@@ -156,12 +156,12 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="game.closePartyModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="game.savePartyPosition()">Save</button>
+                <button class="btn btn-secondary" data-action="closePartyModal">Cancel</button>
+                <button class="btn btn-primary" data-action="savePartyPosition">Save</button>
             </div>
         </div>
     </div>
 
-    <script type="module" src="game.js?v=5"></script>
+    <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

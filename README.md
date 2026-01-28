@@ -25,24 +25,15 @@ A browser-based idle RPG game inspired by [Merchant RPG](https://merchantrpg.fan
 
 ## Deployment to GitHub Pages
 
+This project uses a GitHub Actions workflow that builds the site and deploys the `dist/` folder to GitHub Pages.
+
 ### Enable GitHub Pages:
 1. Go to your repository on GitHub
 2. Click **Settings** → **Pages**
 3. Under "Build and deployment":
-   - Source: **Deploy from a branch**
-   - Branch: Select `claude/create-merchant-game-011CUYkaZSdKvGqA93qE32tx` and `/root`
-   - Click **Save**
-4. Wait a few minutes for deployment
-5. Your game will be live at: `https://[username].github.io/Clay/`
-
-### Alternative: Merge to Main
-To deploy from main branch:
-```bash
-git checkout main
-git merge claude/create-merchant-game-011CUYkaZSdKvGqA93qE32tx
-git push origin main
-```
-Then set GitHub Pages to deploy from `main` branch.
+   - Source: **GitHub Actions**
+4. Push to `main` to trigger deployment
+5. Your game will be live at: `https://[username].github.io/[repo]/`
 
 ## Technical Details
 
@@ -82,12 +73,27 @@ Requires JavaScript and localStorage enabled.
 
 The game consists of:
 - `index.html` - Main page structure
-- `game.js` - Game logic and mechanics
+- `src/main.ts` - Browser entry point + UI wiring
+- `src/game/` - Game logic and mechanics
 - `styles.css` - Mobile-first styling
 - `data/` - JSON files with game data
-- `images/` - Hero icons and assets
+- `public/images/` - Hero icons and assets
 
-To run locally, just open `index.html` in a web browser!
+### Local Dev
+```bash
+npm install
+npm run dev
+```
+
+### Build
+```bash
+npm run build
+```
+
+### Typecheck
+```bash
+npm run typecheck
+```
 
 ## License
 

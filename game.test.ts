@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { MerchantRPG } from './game.js';
+import { MerchantRPG } from './game';
 
 // Mock localStorage
 const localStorageMock = (() => {

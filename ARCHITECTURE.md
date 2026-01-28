@@ -1,7 +1,7 @@
 # Architecture Refactoring Plan
 
 ## Current State
-- **game.js**: 1400+ lines, monolithic
+- **game.ts**: 1400+ lines, monolithic
 - **Tests**: Split but testing monolithic code
 - **No separation of concerns**
 - **Hard to test individual features**
@@ -11,35 +11,35 @@
 ```
 src/
 ├── core/
-│   ├── Game.js              # Main game coordinator (thin orchestration layer)
-│   └── StateManager.js      # Save/load, state persistence
+│   ├── Game.ts              # Main game coordinator (thin orchestration layer)
+│   └── StateManager.ts      # Save/load, state persistence
 │
 ├── systems/
-│   ├── HeroSystem.js        # Hero hiring, leveling, management
-│   ├── QuestSystem.js       # Quest logic, completion, rewards
-│   ├── LootSystem.js        # Loot generation, rarity, drops
-│   ├── PartySystem.js       # Party formation, positioning
-│   └── TacticsSystem.js     # Tactics unlocking, assignment
+│   ├── HeroSystem.ts        # Hero hiring, leveling, management
+│   ├── QuestSystem.ts       # Quest logic, completion, rewards
+│   ├── LootSystem.ts        # Loot generation, rarity, drops
+│   ├── PartySystem.ts       # Party formation, positioning
+│   └── TacticsSystem.ts     # Tactics unlocking, assignment
 │
 ├── data/
-│   ├── heroTemplates.js     # Hero class definitions
-│   ├── questTemplates.js    # Quest/map data
-│   ├── tacticsLibrary.js    # All tactics by class
-│   └── lootTables.js        # Loot configuration
+│   ├── heroTemplates.ts     # Hero class definitions
+│   ├── questTemplates.ts    # Quest/map data
+│   ├── tacticsLibrary.ts    # All tactics by class
+│   └── lootTables.ts        # Loot configuration
 │
 ├── ui/
 │   ├── renderers/
-│   │   ├── HeroRenderer.js      # Heroes tab rendering
-│   │   ├── PartyRenderer.js     # Party grid rendering
-│   │   ├── QuestRenderer.js     # Quests tab rendering
-│   │   └── MaterialsRenderer.js # Materials tab rendering
+│   │   ├── HeroRenderer.ts      # Heroes tab rendering
+│   │   ├── PartyRenderer.ts     # Party grid rendering
+│   │   ├── QuestRenderer.ts     # Quests tab rendering
+│   │   └── MaterialsRenderer.ts # Materials tab rendering
 │   └── modals/
-│       ├── QuestModal.js        # Quest selection modal
-│       └── PartyModal.js        # Party position modal
+│       ├── QuestModal.ts        # Quest selection modal
+│       └── PartyModal.ts        # Party position modal
 │
 └── utils/
-    ├── formatters.js        # Time, number formatting
-    └── constants.js         # Game constants
+    ├── formatters.ts        # Time, number formatting
+    └── constants.ts         # Game constants
 ```
 
 ## Design Principles
@@ -103,7 +103,7 @@ Data templates are frozen, state mutations explicit
 13. Verify UI works in browser
 
 ### Phase 4: Refactor Main Game
-14. Slim down `Game.js` to coordinator
+14. Slim down `Game.ts` to coordinator
 15. Wire systems together
 16. Ensure backward compatibility
 
@@ -115,7 +115,7 @@ Data templates are frozen, state mutations explicit
 
 ## Example: LootSystem Extraction
 
-### Before (in game.js)
+### Before (in game.ts)
 ```javascript
 class MerchantRPG {
     constructor() {
@@ -130,7 +130,7 @@ class MerchantRPG {
 
 ### After
 ```javascript
-// src/systems/LootSystem.js
+// src/systems/LootSystem.ts
 export class LootSystem {
     constructor(lootTables) {
         this.tables = lootTables;
@@ -141,13 +141,13 @@ export class LootSystem {
     generateQuestLoot(questId) { ... }
 }
 
-// src/data/lootTables.js
+// src/data/lootTables.ts
 export const lootRarities = { ... };
 export const lootTables = { ... };
 
-// src/core/Game.js
-import { LootSystem } from '../systems/LootSystem.js';
-import { lootTables } from '../data/lootTables.js';
+// src/core/Game.ts
+import { LootSystem } from '../systems/LootSystem.ts';
+import { lootTables } from '../data/lootTables.ts';
 
 class Game {
     constructor() {
@@ -160,8 +160,8 @@ class Game {
 
 ### Unit Tests (Isolated)
 ```javascript
-// tests/unit/LootSystem.test.js
-import { LootSystem } from '../../src/systems/LootSystem.js';
+// tests/unit/LootSystem.test.ts
+import { LootSystem } from '../../src/systems/LootSystem.ts';
 
 describe('LootSystem', () => {
     it('generates loot with correct rarity', () => {
@@ -174,8 +174,8 @@ describe('LootSystem', () => {
 
 ### Integration Tests
 ```javascript
-// tests/integration/game.test.js
-import { Game } from '../../src/core/Game.js';
+// tests/integration/game.test.ts
+import { Game } from '../../src/core/Game.ts';
 
 describe('Game Integration', () => {
     it('completes quest and generates loot', () => {
@@ -201,7 +201,7 @@ describe('Game Integration', () => {
 | Breaking existing tests | Incremental refactor, tests pass each step |
 | Browser compatibility | Use esbuild to bundle for ES5 if needed |
 | Increased complexity | Clear documentation, consistent patterns |
-| Import hell | Barrel exports (index.js files) |
+| Import hell | Barrel exports (index.ts files) |
 
 ## Success Criteria
 

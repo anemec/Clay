@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { MerchantRPG } from './game.js';
+import { MerchantRPG } from './game';
 
 describe('Battle Party System - Architecture', () => {
     let game;
