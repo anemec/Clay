@@ -16,14 +16,15 @@ export const loopMethods = {
     },
 
     startGameLoop() {
-        this.adventureLastTick = Date.now();
         setInterval(() => {
             this.updateGameState();
             if (this.state.adventure?.active) {
                 const now = Date.now();
-                if (now - this.adventureLastTick >= 5000) {
-                    this.adventureLastTick = now;
-                    this.tickAdventure();
+                const lastTickAt = this.state.adventure.lastTickAt || now;
+                const elapsed = now - lastTickAt;
+                if (elapsed >= 5000) {
+                    this.processAdventureTicks(elapsed);
+                    this.state.adventure.lastTickAt = now;
                 }
             }
             this.render();

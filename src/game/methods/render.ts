@@ -181,7 +181,6 @@ export const renderMethods = {
                         <div>Last Event: ${this.state.adventure.lastEvent || 'None'}</div>
                         <div>Supplies: 🧪 ${this.state.adventure.resources.potions} • 🍖 ${this.state.adventure.resources.food} • 💰 ${this.state.adventure.resources.gold}</div>
                     </div>
-                    <button class="btn btn-secondary" data-action="tickAdventure">Advance Tick</button>
                 </div>
             `;
         } else {

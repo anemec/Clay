@@ -129,7 +129,8 @@ class MerchantRPG {
                     opportunity: true,
                     resource: true,
                     status: true
-                }
+                },
+                lastTickAt: null
             },
             adventureDrafts: {},
             unlockedClasses: [...UNLOCKED_CLASSES_DEFAULT], // Fighter, Wizard, Rogue start unlocked

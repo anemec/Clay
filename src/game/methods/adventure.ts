@@ -134,7 +134,8 @@ export const adventureMethods = {
                 opportunity: true,
                 resource: true,
                 status: true
-            }
+            },
+            lastTickAt: Date.now()
         };
 
         this.save();
@@ -179,6 +180,20 @@ export const adventureMethods = {
 
         this.save();
         this.render();
+    },
+
+    processAdventureTicks(elapsedMs) {
+        const adventureState = this.state.adventure;
+        if (!adventureState?.active) return;
+
+        const tickLength = 5000;
+        const ticks = Math.floor(elapsedMs / tickLength);
+        if (ticks <= 0) return;
+
+        for (let i = 0; i < ticks; i += 1) {
+            if (!adventureState.active) break;
+            this.tickAdventure();
+        }
     },
 
     shouldRetreat(adventureState) {
@@ -346,6 +361,7 @@ export const adventureMethods = {
 
         this.state.adventure.active = false;
         this.state.adventure.outcome = outcome;
+        this.state.adventure.lastTickAt = Date.now();
 
         this.save();
         this.render();

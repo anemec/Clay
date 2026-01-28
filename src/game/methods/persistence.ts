@@ -50,7 +50,8 @@ export const persistenceMethods = {
                             opportunity: true,
                             resource: true,
                             status: true
-                        }
+                        },
+                        lastTickAt: null
                     };
                 } else if (!this.state.adventure.log) {
                     this.state.adventure.log = [];
@@ -69,6 +70,10 @@ export const persistenceMethods = {
                         resource: true,
                         status: true
                     };
+                }
+
+                if (!this.state.adventure.lastTickAt) {
+                    this.state.adventure.lastTickAt = Date.now();
                 }
 
                 if (!this.state.adventureDrafts) {
