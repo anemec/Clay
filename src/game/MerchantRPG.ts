@@ -80,6 +80,8 @@ class MerchantRPG {
     declare startAdventureFromForm: (adventureId: number) => void;
     declare setAdventureLogFilter: (filter: string, enabled: boolean) => void;
     declare refineMaterial: (recipeId: number) => void;
+    declare updateAdventureDraftHero: (adventureId: number, heroId: number, checked: boolean) => void;
+    declare updateAdventureDraftResource: (adventureId: number, resource: string, value: number) => void;
 
     constructor(options: { skipInit?: boolean } = {}) {
         // Options for testing
@@ -129,6 +131,7 @@ class MerchantRPG {
                     status: true
                 }
             },
+            adventureDrafts: {},
             unlockedClasses: [...UNLOCKED_CLASSES_DEFAULT], // Fighter, Wizard, Rogue start unlocked
             battleParty: {
                 positions: [

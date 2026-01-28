@@ -193,6 +193,9 @@ export const renderMethods = {
             adventureList.innerHTML = '<div class="empty-state">Hire heroes to start an adventure.</div>';
         } else {
             adventureList.innerHTML = this.adventureTemplates.map(adventure => {
+            const draft = this.state.adventureDrafts?.[adventure.id] || { heroIds: [], resources: {}, riskTolerance: 0.4 };
+            const heroIds = new Set(draft.heroIds || []);
+            const resources = draft.resources || {};
             return `
                 <div class="adventure-card">
                     <div class="adventure-header">
@@ -203,16 +206,16 @@ export const renderMethods = {
                     <div class="adventure-heroes">
                         ${heroes.map(hero => `
                             <label class="adventure-hero">
-                                <input type="checkbox" data-adventure-id="${adventure.id}" data-adventure-hero="${hero.id}">
+                                <input type="checkbox" data-adventure-id="${adventure.id}" data-adventure-hero="${hero.id}" ${heroIds.has(hero.id) ? 'checked' : ''}>
                                 ${hero.name} (Lv.${hero.level})
                             </label>
                         `).join('')}
                     </div>
                     <div class="adventure-resources">
-                        <label>Potions <input type="number" min="0" value="0" data-adventure-resource="potions" data-adventure-id="${adventure.id}"></label>
-                        <label>Food <input type="number" min="0" value="0" data-adventure-resource="food" data-adventure-id="${adventure.id}"></label>
-                        <label>Gold <input type="number" min="0" value="0" data-adventure-resource="gold" data-adventure-id="${adventure.id}"></label>
-                        <label>Risk <input type="number" min="0" max="1" step="0.05" value="0.4" data-adventure-resource="risk" data-adventure-id="${adventure.id}"></label>
+                        <label>Potions <input type="number" min="0" value="${resources.potions ?? 0}" data-adventure-resource="potions" data-adventure-id="${adventure.id}"></label>
+                        <label>Food <input type="number" min="0" value="${resources.food ?? 0}" data-adventure-resource="food" data-adventure-id="${adventure.id}"></label>
+                        <label>Gold <input type="number" min="0" value="${resources.gold ?? 0}" data-adventure-resource="gold" data-adventure-id="${adventure.id}"></label>
+                        <label>Risk <input type="number" min="0" max="1" step="0.05" value="${draft.riskTolerance ?? 0.4}" data-adventure-resource="risk" data-adventure-id="${adventure.id}"></label>
                     </div>
                     <button class="btn btn-primary" data-action="startAdventureForm" data-adventure-id="${adventure.id}">Start Adventure</button>
                 </div>

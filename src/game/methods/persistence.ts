@@ -70,6 +70,10 @@ export const persistenceMethods = {
                         status: true
                     };
                 }
+
+                if (!this.state.adventureDrafts) {
+                    this.state.adventureDrafts = {};
+                }
             }
         } catch (e) {
             console.error('Failed to load game:', e);

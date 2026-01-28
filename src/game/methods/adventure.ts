@@ -2,18 +2,22 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 
 export const adventureMethods = {
     startAdventureFromForm(adventureId) {
-        const heroInputs = Array.from(document.querySelectorAll(`[data-adventure-id="${adventureId}"][data-adventure-hero]`));
-        const selectedHeroes = heroInputs.filter((input: HTMLInputElement) => input.checked).map((input: HTMLInputElement) => Number(input.dataset.adventureHero));
+        const draft = this.state.adventureDrafts?.[adventureId];
+        const selectedHeroes = draft?.heroIds?.length
+            ? draft.heroIds
+            : Array.from(document.querySelectorAll(`[data-adventure-id="${adventureId}"][data-adventure-hero]`))
+                .filter((input: HTMLInputElement) => input.checked)
+                .map((input: HTMLInputElement) => Number(input.dataset.adventureHero));
 
         if (selectedHeroes.length === 0) {
             alert('Select at least one hero.');
             return;
         }
 
-        const potions = Number((document.querySelector(`[data-adventure-id="${adventureId}"][data-adventure-resource="potions"]`) as HTMLInputElement | null)?.value || 0);
-        const food = Number((document.querySelector(`[data-adventure-id="${adventureId}"][data-adventure-resource="food"]`) as HTMLInputElement | null)?.value || 0);
-        const gold = Number((document.querySelector(`[data-adventure-id="${adventureId}"][data-adventure-resource="gold"]`) as HTMLInputElement | null)?.value || 0);
-        const risk = Number((document.querySelector(`[data-adventure-id="${adventureId}"][data-adventure-resource="risk"]`) as HTMLInputElement | null)?.value || 0.4);
+        const potions = draft?.resources?.potions ?? Number((document.querySelector(`[data-adventure-id="${adventureId}"][data-adventure-resource="potions"]`) as HTMLInputElement | null)?.value || 0);
+        const food = draft?.resources?.food ?? Number((document.querySelector(`[data-adventure-id="${adventureId}"][data-adventure-resource="food"]`) as HTMLInputElement | null)?.value || 0);
+        const gold = draft?.resources?.gold ?? Number((document.querySelector(`[data-adventure-id="${adventureId}"][data-adventure-resource="gold"]`) as HTMLInputElement | null)?.value || 0);
+        const risk = draft?.riskTolerance ?? Number((document.querySelector(`[data-adventure-id="${adventureId}"][data-adventure-resource="risk"]`) as HTMLInputElement | null)?.value || 0.4);
 
         this.startAdventure({
             adventureId,
@@ -21,6 +25,41 @@ export const adventureMethods = {
             resources: { potions, food, gold },
             riskTolerance: risk
         });
+    },
+
+    updateAdventureDraftHero(adventureId, heroId, checked) {
+        if (!this.state.adventureDrafts) {
+            this.state.adventureDrafts = {};
+        }
+        if (!this.state.adventureDrafts[adventureId]) {
+            this.state.adventureDrafts[adventureId] = { heroIds: [], resources: {}, riskTolerance: 0.4 };
+        }
+        const draft = this.state.adventureDrafts[adventureId];
+        const heroIds = new Set(draft.heroIds || []);
+        if (checked) {
+            heroIds.add(heroId);
+        } else {
+            heroIds.delete(heroId);
+        }
+        draft.heroIds = Array.from(heroIds);
+        this.save();
+    },
+
+    updateAdventureDraftResource(adventureId, resource, value) {
+        if (!this.state.adventureDrafts) {
+            this.state.adventureDrafts = {};
+        }
+        if (!this.state.adventureDrafts[adventureId]) {
+            this.state.adventureDrafts[adventureId] = { heroIds: [], resources: {}, riskTolerance: 0.4 };
+        }
+        const draft = this.state.adventureDrafts[adventureId];
+        if (resource === 'risk') {
+            draft.riskTolerance = value;
+        } else {
+            if (!draft.resources) draft.resources = {};
+            draft.resources[resource] = value;
+        }
+        this.save();
     },
 
     startAdventure({ adventureId, heroIds, resources, riskTolerance }) {

@@ -57,23 +57,35 @@ function bindUI(gameInstance: MerchantRPG) {
 
     document.addEventListener('change', (event) => {
         const target = (event.target as HTMLElement | null)?.closest('[data-action]') as HTMLElement | null;
-        if (!target) return;
+        if (target) {
+            const action = target.dataset.action;
 
-        const action = target.dataset.action;
+            switch (action) {
+                case 'selectEquipmentHero': {
+                    const select = target as HTMLSelectElement;
+                    gameInstance.selectEquipmentHero(Number(select.value));
+                    break;
+                }
+                case 'filterAdventureLog': {
+                    const input = target as HTMLInputElement;
+                    gameInstance.setAdventureLogFilter(input.dataset.filter ?? 'status', input.checked);
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
 
-        switch (action) {
-            case 'selectEquipmentHero': {
-                const select = target as HTMLSelectElement;
-                gameInstance.selectEquipmentHero(Number(select.value));
-                break;
-            }
-            case 'filterAdventureLog': {
-                const input = target as HTMLInputElement;
-                gameInstance.setAdventureLogFilter(input.dataset.filter ?? 'status', input.checked);
-                break;
-            }
-            default:
-                break;
+        const adventureInput = (event.target as HTMLElement | null)?.closest('[data-adventure-id]') as HTMLElement | null;
+        if (!adventureInput) return;
+
+        const adventureId = Number(adventureInput.dataset.adventureId);
+        if (Number.isNaN(adventureId)) return;
+
+        if (adventureInput instanceof HTMLInputElement && adventureInput.dataset.adventureHero) {
+            gameInstance.updateAdventureDraftHero(adventureId, Number(adventureInput.dataset.adventureHero), adventureInput.checked);
+        } else if (adventureInput instanceof HTMLInputElement && adventureInput.dataset.adventureResource) {
+            gameInstance.updateAdventureDraftResource(adventureId, adventureInput.dataset.adventureResource, Number(adventureInput.value));
         }
     });
 }
