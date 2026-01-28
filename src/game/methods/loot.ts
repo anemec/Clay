@@ -22,7 +22,7 @@ export const lootMethods = {
         return 'common';
     },
 
-    generateLoot(level, options = {}) {
+    generateLoot(level, options: { luckMultiplier?: number } = {}) {
         const luckMultiplier = options.luckMultiplier || 1.0;
 
         // Select rarity
@@ -41,7 +41,7 @@ export const lootMethods = {
         // Generate item name based on type
         let name = '';
         let description = '';
-        let stats = {};
+        let stats: { attack?: number; defense?: number } = {};
 
         if (type === 'weapon') {
             const weaponNames = ['Sword', 'Axe', 'Bow', 'Staff', 'Dagger', 'Mace'];
@@ -89,14 +89,6 @@ export const lootMethods = {
     generateQuestLoot(questId) {
         const quest = this.questTemplates.find(q => q.id === questId);
         if (!quest) return [];
-
-        // Determine quest type based on quest name/description
-        let questType = 'forest';
-        if (quest.name.toLowerCase().includes('yarsol') || quest.desc.toLowerCase().includes('cove')) {
-            questType = 'cove';
-        } else if (quest.name.toLowerCase().includes('aldur') || quest.desc.toLowerCase().includes('highland')) {
-            questType = 'highlands';
-        }
 
         // Generate 1-3 items based on quest level
         const itemCount = Math.floor(Math.random() * 3) + 1;

@@ -32,7 +32,9 @@ import { loopMethods } from './methods/loop';
 import { equipmentMethods } from './methods/equipment';
 
 class MerchantRPG {
-    constructor(options = {}) {
+    [key: string]: unknown;
+
+    constructor(options: { skipInit?: boolean } = {}) {
         // Options for testing
         this.skipInit = options.skipInit || false;
 

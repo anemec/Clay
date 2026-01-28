@@ -93,7 +93,8 @@ export const heroMethods = {
     },
 
     hireHero() {
-        const selectElement = document.getElementById('hero-class-select');
+        const selectElement = document.getElementById('hero-class-select') as HTMLSelectElement | null;
+        if (!selectElement) return;
         const classIndex = parseInt(selectElement.value);
         const template = this.heroTemplates[classIndex];
 

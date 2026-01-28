@@ -149,7 +149,8 @@ export const partyMethods = {
             `Configure hero and tactic for this position. ${row === 'Front Row' ? 'Front row heroes engage enemies directly.' : 'Back row heroes provide ranged support.'}`;
 
         // Populate hero select
-        const heroSelect = document.getElementById('modal-party-hero-select');
+        const heroSelect = document.getElementById('modal-party-hero-select') as HTMLSelectElement | null;
+        if (!heroSelect) return;
         const availableHeroes = this.state.heroes.filter(h => {
             // Hero is either in this position, or not in any position
             return h.status === 'idle' && (
@@ -179,11 +180,13 @@ export const partyMethods = {
     },
 
     updateTacticSelection() {
-        const heroSelect = document.getElementById('modal-party-hero-select');
+        const heroSelect = document.getElementById('modal-party-hero-select') as HTMLSelectElement | null;
+        const tacticSection = document.getElementById('modal-tactic-selection') as HTMLElement | null;
+        const tacticSelect = document.getElementById('modal-tactic-select') as HTMLSelectElement | null;
+        const tacticDesc = document.getElementById('modal-tactic-description') as HTMLElement | null;
+        if (!heroSelect || !tacticSection || !tacticSelect || !tacticDesc) return;
+
         const heroId = parseInt(heroSelect.value);
-        const tacticSection = document.getElementById('modal-tactic-selection');
-        const tacticSelect = document.getElementById('modal-tactic-select');
-        const tacticDesc = document.getElementById('modal-tactic-description');
 
         if (!heroId) {
             tacticSection.style.display = 'none';
@@ -224,13 +227,14 @@ export const partyMethods = {
         };
 
         // Trigger initial description update
-        tacticSelect.onchange();
+        tacticSelect.onchange?.(new Event('change'));
     },
 
     savePartyPosition() {
         const position = this.currentPartyPosition;
-        const heroSelect = document.getElementById('modal-party-hero-select');
-        const tacticSelect = document.getElementById('modal-tactic-select');
+        const heroSelect = document.getElementById('modal-party-hero-select') as HTMLSelectElement | null;
+        const tacticSelect = document.getElementById('modal-tactic-select') as HTMLSelectElement | null;
+        if (!heroSelect || !tacticSelect) return;
 
         const heroId = parseInt(heroSelect.value) || null;
         const tacticId = tacticSelect.value || null;

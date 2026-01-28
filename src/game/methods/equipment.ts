@@ -36,7 +36,7 @@ export const equipmentMethods = {
         this.render();
     },
 
-    unequipItem(slot, heroId, options = {}) {
+    unequipItem(slot, heroId, options: { silent?: boolean } = {}) {
         const hero = this.state.heroes.find(h => h.id === heroId);
         if (!hero || !hero.equipment) return;
 
@@ -58,7 +58,7 @@ export const equipmentMethods = {
         if (!recipe) return;
 
         const materials = recipe.materials || {};
-        const materialEntries = Object.entries(materials);
+        const materialEntries = Object.entries(materials) as [string, number][];
 
         const canCraft = materialEntries.every(([material, amount]) => {
             return (this.state.materials[material] || 0) >= amount;
@@ -89,7 +89,7 @@ export const equipmentMethods = {
         this.render();
     },
 
-    applyItemStats(hero, item, direction) {
+    applyItemStats(hero, item, direction: number) {
         const stats = item.stats || {};
         const attack = stats.attack || 0;
         const defense = stats.defense || 0;

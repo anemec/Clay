@@ -15,7 +15,9 @@
   "include": [
     "src",
     "game.ts",
-    "*.test.ts",
     "vite.config.ts"
+  ],
+  "exclude": [
+    "**/*.test.ts"
   ]
 }

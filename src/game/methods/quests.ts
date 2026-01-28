@@ -27,7 +27,8 @@ export const questMethods = {
         document.getElementById('modal-quest-details').innerHTML = detailsHtml;
 
         // Populate hero selection
-        const heroSelect = document.getElementById('modal-hero-select');
+        const heroSelect = document.getElementById('modal-hero-select') as HTMLSelectElement | null;
+        if (!heroSelect) return;
         const idleHeroes = this.state.heroes.filter(h => h.status === 'idle');
 
         if (idleHeroes.length === 0) {
@@ -53,7 +54,8 @@ export const questMethods = {
     startQuest() {
         if (!this.currentQuest) return;
 
-        const heroSelect = document.getElementById('modal-hero-select');
+        const heroSelect = document.getElementById('modal-hero-select') as HTMLSelectElement | null;
+        if (!heroSelect) return;
         const heroId = parseInt(heroSelect.value);
         const hero = this.state.heroes.find(h => h.id === heroId);
 

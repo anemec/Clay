@@ -2,8 +2,10 @@ export const renderMethods = {
     // === Rendering ===
     render() {
         // Update gold
-        document.getElementById('gold').textContent = Math.floor(this.state.gold);
-        document.getElementById('hero-count').textContent = this.state.heroes.length;
+        const goldElement = document.getElementById('gold');
+        const heroCountElement = document.getElementById('hero-count');
+        if (goldElement) goldElement.textContent = String(Math.floor(this.state.gold));
+        if (heroCountElement) heroCountElement.textContent = String(this.state.heroes.length);
 
         // Render based on active tab
         if (this.state.activeTab === 'heroes') {
@@ -129,7 +131,7 @@ export const renderMethods = {
     },
 
     renderEquipment() {
-        const heroSelect = document.getElementById('equipment-hero-select');
+        const heroSelect = document.getElementById('equipment-hero-select') as HTMLSelectElement | null;
         const equippedList = document.getElementById('equipment-slots');
         const inventoryList = document.getElementById('equipment-inventory');
 
@@ -240,7 +242,8 @@ export const renderMethods = {
 
     renderMaterials() {
         const materialsListElement = document.getElementById('materials-list');
-        const materials = Object.entries(this.state.materials).filter(([_, count]) => count > 0);
+        if (!materialsListElement) return;
+        const materials = (Object.entries(this.state.materials) as [string, number][]).filter(([_, count]) => count > 0);
 
         if (materials.length === 0) {
             materialsListElement.innerHTML = '<div class="empty-state">No materials collected yet. Send heroes on quests to gather materials!</div>';
