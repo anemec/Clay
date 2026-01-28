@@ -114,7 +114,8 @@ class MerchantRPG {
                 ticksToGoal: 0,
                 goalType: null,
                 outcome: null,
-                lastEvent: null
+                lastEvent: null,
+                log: []
             },
             unlockedClasses: [...UNLOCKED_CLASSES_DEFAULT], // Fighter, Wizard, Rogue start unlocked
             battleParty: {

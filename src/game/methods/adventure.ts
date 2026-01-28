@@ -82,7 +82,10 @@ export const adventureMethods = {
             ticksToGoal: adventure.ticksToGoal,
             goalType: adventure.goalType,
             outcome: null,
-            lastEvent: null
+            lastEvent: null,
+            log: [
+                `Adventure started: ${adventure.name} (Goal: ${adventure.goalType}).`
+            ]
         };
 
         this.save();
@@ -99,6 +102,7 @@ export const adventureMethods = {
         }
 
         adventureState.tick += 1;
+        this.logAdventure(adventureState, `Tick ${adventureState.tick} begins.`);
         this.consumeAdventureFood(adventureState);
 
         let eventType = this.rollAdventureEvent(adventureState);
@@ -158,6 +162,7 @@ export const adventureMethods = {
     consumeAdventureFood(adventureState) {
         if (adventureState.resources.food > 0) {
             adventureState.resources.food -= 1;
+            this.logAdventure(adventureState, 'The party consumes 1 food.');
             return;
         }
 
@@ -168,6 +173,7 @@ export const adventureMethods = {
         heroes.forEach(hero => {
             hero.hp = Math.max(1, hero.hp - Math.ceil(hero.maxHp * 0.05));
         });
+        this.logAdventure(adventureState, 'Supplies are low. The party loses some health.');
     },
 
     rollAdventureEvent(adventureState) {
@@ -183,10 +189,12 @@ export const adventureMethods = {
 
     resolveAdventureEvent(eventType, adventureState) {
         adventureState.lastEvent = eventType;
+        this.logAdventure(adventureState, `Event: ${eventType}.`);
 
         if (eventType === 'opportunity') {
             if (Math.random() > 0.6) {
                 this.awardAdventureLoot();
+                this.logAdventure(adventureState, 'Found equipment during the opportunity.');
             }
             return;
         }
@@ -194,6 +202,7 @@ export const adventureMethods = {
         if (eventType === 'encounter') {
             if (Math.random() > 0.7 && adventureState.resources.gold > 0) {
                 adventureState.resources.gold = Math.max(0, adventureState.resources.gold - 10);
+                this.logAdventure(adventureState, 'Encounter cost the party 10 gold.');
             }
             return;
         }
@@ -219,17 +228,21 @@ export const adventureMethods = {
             heroes.forEach(hero => {
                 hero.hp = Math.max(0, hero.hp - Math.ceil(hero.maxHp * (0.15 + Math.random() * 0.2)));
             });
+            this.logAdventure(adventureState, 'Battle went poorly; the party took damage.');
 
             if (adventureState.resources.potions > 0) {
                 const hero = heroes.find(h => h.hp > 0 && h.hp / h.maxHp < 0.5);
                 if (hero) {
                     hero.hp = Math.min(hero.maxHp, hero.hp + Math.ceil(hero.maxHp * 0.4));
                     adventureState.resources.potions -= 1;
+                    this.logAdventure(adventureState, `${hero.name} used a potion.`);
                 }
             }
         } else {
+            this.logAdventure(adventureState, 'Battle victory!');
             if (Math.random() > 0.5) {
                 this.awardAdventureLoot();
+                this.logAdventure(adventureState, 'Recovered equipment after the battle.');
             }
         }
 
@@ -267,6 +280,11 @@ export const adventureMethods = {
 
         if (outcome === 'success') {
             this.awardAdventureLoot();
+            this.logAdventure(adventureState, 'Adventure completed successfully!');
+        } else if (outcome === 'retreat') {
+            this.logAdventure(adventureState, 'The party chose to retreat.');
+        } else if (outcome === 'defeat') {
+            this.logAdventure(adventureState, 'The party was defeated.');
         }
 
         const heroes = adventureState.partyHeroIds
@@ -282,6 +300,16 @@ export const adventureMethods = {
 
         this.save();
         this.render();
+    },
+
+    logAdventure(adventureState, message) {
+        if (!adventureState.log) {
+            adventureState.log = [];
+        }
+        adventureState.log.push(message);
+        if (adventureState.log.length > 50) {
+            adventureState.log.shift();
+        }
     },
 
     takeInventoryItems(type, count) {

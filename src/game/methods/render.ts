@@ -165,7 +165,8 @@ export const renderMethods = {
     renderAdventure() {
         const adventureList = document.getElementById('adventure-list');
         const adventureStatus = document.getElementById('adventure-status');
-        if (!adventureList || !adventureStatus) return;
+        const adventureLog = document.getElementById('adventure-log');
+        if (!adventureList || !adventureStatus || !adventureLog) return;
 
         const heroes = this.state.heroes || [];
 
@@ -219,6 +220,15 @@ export const renderMethods = {
                 </div>
             `;
         }).join('');
+
+        const logEntries = this.state.adventure?.log || [];
+        if (logEntries.length === 0) {
+            adventureLog.innerHTML = '<div class="empty-state">No adventure log entries yet.</div>';
+        } else {
+            adventureLog.innerHTML = logEntries.slice().reverse().map(entry => {
+                return `<div class="adventure-log-entry">${entry}</div>`;
+            }).join('');
+        }
     },
 
     renderEquipment() {

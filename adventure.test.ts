@@ -45,6 +45,7 @@ describe('Adventure System - Party Adventures', () => {
         expect(game.state.adventure.resources.potions).toBe(1);
         expect(game.state.adventure.resources.food).toBe(2);
         expect(game.state.adventure.resources.gold).toBe(100);
+        expect(game.state.adventure.log.length).toBeGreaterThan(0);
         expect(game.state.gold).toBe(startingGold - 100);
         expect(game.state.inventory.filter(i => i.type === 'potion')).toHaveLength(0);
         expect(game.state.inventory.filter(i => i.type === 'food')).toHaveLength(0);

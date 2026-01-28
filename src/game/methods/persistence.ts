@@ -42,8 +42,11 @@ export const persistenceMethods = {
                         ticksToGoal: 0,
                         goalType: null,
                         outcome: null,
-                        lastEvent: null
+                        lastEvent: null,
+                        log: []
                     };
+                } else if (!this.state.adventure.log) {
+                    this.state.adventure.log = [];
                 }
             }
         } catch (e) {
