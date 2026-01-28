@@ -32,7 +32,39 @@ import { loopMethods } from './methods/loop';
 import { equipmentMethods } from './methods/equipment';
 
 class MerchantRPG {
-    [key: string]: unknown;
+    skipInit: boolean;
+    heroTemplates: unknown[];
+    questTemplates: unknown[];
+    tacticsLibrary: Record<string, unknown>;
+    lootRarities: Record<string, unknown>;
+    itemTypes: string[];
+    lootTables: unknown;
+    battlePartyGrid: unknown;
+    craftingRecipes: Array<Record<string, unknown>>;
+    expPerLevelMultiplier: number;
+    nextItemId: number;
+    state: Record<string, unknown>;
+    currentQuest: unknown;
+    lastUnlockedClasses: number[];
+
+    load!: () => void;
+    updateGameState!: () => void;
+    render!: () => void;
+    startGameLoop!: () => void;
+    switchTab!: (tabName: string, target?: HTMLElement | null) => void;
+    openQuestModal!: (questId: number) => void;
+    openPartyPositionModal!: (position: number) => void;
+    hireHero!: () => void;
+    save!: () => void;
+    reset!: () => void;
+    closeQuestModal!: () => void;
+    startQuest!: () => void;
+    closePartyModal!: () => void;
+    savePartyPosition!: () => void;
+    equipItem!: (itemId: number, heroId: number) => void;
+    unequipItem!: (slot: string, heroId: number, options?: { silent?: boolean }) => void;
+    craftItem!: (recipeId: number) => void;
+    selectEquipmentHero!: (heroId: number) => void;
 
     constructor(options: { skipInit?: boolean } = {}) {
         // Options for testing
