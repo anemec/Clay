@@ -226,7 +226,8 @@ export const renderMethods = {
             adventureLog.innerHTML = '<div class="empty-state">No adventure log entries yet.</div>';
         } else {
             adventureLog.innerHTML = logEntries.slice().reverse().map(entry => {
-                return `<div class="adventure-log-entry">${entry}</div>`;
+                const type = entry.type || 'status';
+                return `<div class="adventure-log-entry ${`adventure-log-${type}`}">${entry.message}</div>`;
             }).join('');
         }
     },

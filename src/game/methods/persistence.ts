@@ -47,6 +47,11 @@ export const persistenceMethods = {
                     };
                 } else if (!this.state.adventure.log) {
                     this.state.adventure.log = [];
+                } else if (this.state.adventure.log.length && typeof this.state.adventure.log[0] === 'string') {
+                    this.state.adventure.log = this.state.adventure.log.map(message => ({
+                        type: 'status',
+                        message
+                    }));
                 }
             }
         } catch (e) {

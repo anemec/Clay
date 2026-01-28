@@ -570,6 +570,31 @@ body {
     color: var(--text-secondary);
 }
 
+.adventure-log-battle {
+    border-color: rgba(255, 99, 71, 0.5);
+    color: #ffb6a1;
+}
+
+.adventure-log-encounter {
+    border-color: rgba(255, 193, 7, 0.5);
+    color: #ffe39a;
+}
+
+.adventure-log-opportunity {
+    border-color: rgba(46, 204, 113, 0.5);
+    color: #a8f0c2;
+}
+
+.adventure-log-resource {
+    border-color: rgba(52, 152, 219, 0.5);
+    color: #b4dcff;
+}
+
+.adventure-log-status {
+    border-color: rgba(155, 89, 182, 0.4);
+    color: #e0c5ff;
+}
+
 /* === Equipment === */
 .equipment-slots {
     display: grid;

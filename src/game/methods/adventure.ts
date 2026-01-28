@@ -84,7 +84,10 @@ export const adventureMethods = {
             outcome: null,
             lastEvent: null,
             log: [
-                `Adventure started: ${adventure.name} (Goal: ${adventure.goalType}).`
+                {
+                    type: 'status',
+                    message: `Adventure started: ${adventure.name} (Goal: ${adventure.goalType}).`
+                }
             ]
         };
 
@@ -102,7 +105,7 @@ export const adventureMethods = {
         }
 
         adventureState.tick += 1;
-        this.logAdventure(adventureState, `Tick ${adventureState.tick} begins.`);
+        this.logAdventure(adventureState, 'status', `Tick ${adventureState.tick} begins.`);
         this.consumeAdventureFood(adventureState);
 
         let eventType = this.rollAdventureEvent(adventureState);
@@ -162,7 +165,7 @@ export const adventureMethods = {
     consumeAdventureFood(adventureState) {
         if (adventureState.resources.food > 0) {
             adventureState.resources.food -= 1;
-            this.logAdventure(adventureState, 'The party consumes 1 food.');
+            this.logAdventure(adventureState, 'resource', 'The party consumes 1 food.');
             return;
         }
 
@@ -173,7 +176,7 @@ export const adventureMethods = {
         heroes.forEach(hero => {
             hero.hp = Math.max(1, hero.hp - Math.ceil(hero.maxHp * 0.05));
         });
-        this.logAdventure(adventureState, 'Supplies are low. The party loses some health.');
+        this.logAdventure(adventureState, 'resource', 'Supplies are low. The party loses some health.');
     },
 
     rollAdventureEvent(adventureState) {
@@ -189,12 +192,12 @@ export const adventureMethods = {
 
     resolveAdventureEvent(eventType, adventureState) {
         adventureState.lastEvent = eventType;
-        this.logAdventure(adventureState, `Event: ${eventType}.`);
+        this.logAdventure(adventureState, eventType, `Event: ${eventType}.`);
 
         if (eventType === 'opportunity') {
             if (Math.random() > 0.6) {
                 this.awardAdventureLoot();
-                this.logAdventure(adventureState, 'Found equipment during the opportunity.');
+                this.logAdventure(adventureState, 'opportunity', 'Found equipment during the opportunity.');
             }
             return;
         }
@@ -202,7 +205,7 @@ export const adventureMethods = {
         if (eventType === 'encounter') {
             if (Math.random() > 0.7 && adventureState.resources.gold > 0) {
                 adventureState.resources.gold = Math.max(0, adventureState.resources.gold - 10);
-                this.logAdventure(adventureState, 'Encounter cost the party 10 gold.');
+                this.logAdventure(adventureState, 'encounter', 'Encounter cost the party 10 gold.');
             }
             return;
         }
@@ -228,21 +231,21 @@ export const adventureMethods = {
             heroes.forEach(hero => {
                 hero.hp = Math.max(0, hero.hp - Math.ceil(hero.maxHp * (0.15 + Math.random() * 0.2)));
             });
-            this.logAdventure(adventureState, 'Battle went poorly; the party took damage.');
+            this.logAdventure(adventureState, 'battle', 'Battle went poorly; the party took damage.');
 
             if (adventureState.resources.potions > 0) {
                 const hero = heroes.find(h => h.hp > 0 && h.hp / h.maxHp < 0.5);
                 if (hero) {
                     hero.hp = Math.min(hero.maxHp, hero.hp + Math.ceil(hero.maxHp * 0.4));
                     adventureState.resources.potions -= 1;
-                    this.logAdventure(adventureState, `${hero.name} used a potion.`);
+                    this.logAdventure(adventureState, 'resource', `${hero.name} used a potion.`);
                 }
             }
         } else {
-            this.logAdventure(adventureState, 'Battle victory!');
+            this.logAdventure(adventureState, 'battle', 'Battle victory!');
             if (Math.random() > 0.5) {
                 this.awardAdventureLoot();
-                this.logAdventure(adventureState, 'Recovered equipment after the battle.');
+                this.logAdventure(adventureState, 'battle', 'Recovered equipment after the battle.');
             }
         }
 
@@ -280,11 +283,11 @@ export const adventureMethods = {
 
         if (outcome === 'success') {
             this.awardAdventureLoot();
-            this.logAdventure(adventureState, 'Adventure completed successfully!');
+            this.logAdventure(adventureState, 'status', 'Adventure completed successfully!');
         } else if (outcome === 'retreat') {
-            this.logAdventure(adventureState, 'The party chose to retreat.');
+            this.logAdventure(adventureState, 'status', 'The party chose to retreat.');
         } else if (outcome === 'defeat') {
-            this.logAdventure(adventureState, 'The party was defeated.');
+            this.logAdventure(adventureState, 'status', 'The party was defeated.');
         }
 
         const heroes = adventureState.partyHeroIds
@@ -302,11 +305,11 @@ export const adventureMethods = {
         this.render();
     },
 
-    logAdventure(adventureState, message) {
+    logAdventure(adventureState, type, message) {
         if (!adventureState.log) {
             adventureState.log = [];
         }
-        adventureState.log.push(message);
+        adventureState.log.push({ type, message });
         if (adventureState.log.length > 50) {
             adventureState.log.shift();
         }
