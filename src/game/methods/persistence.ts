@@ -30,6 +30,21 @@ export const persistenceMethods = {
                         }
                     });
                 }
+
+                if (!this.state.adventure) {
+                    this.state.adventure = {
+                        active: false,
+                        adventureId: null,
+                        partyHeroIds: [],
+                        resources: { potions: 0, food: 0, gold: 0 },
+                        riskTolerance: 0.4,
+                        tick: 0,
+                        ticksToGoal: 0,
+                        goalType: null,
+                        outcome: null,
+                        lastEvent: null
+                    };
+                }
             }
         } catch (e) {
             console.error('Failed to load game:', e);

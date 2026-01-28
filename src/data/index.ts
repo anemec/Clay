@@ -8,3 +8,5 @@ export { questTemplates } from './questTemplates';
 export { tacticsLibrary } from './tacticsLibrary';
 export { lootRarities, itemTypes, lootTables, battlePartyGrid } from './lootTables';
 export { craftingRecipes } from './craftingRecipes';
+export { shopItems } from './shopItems';
+export { adventureTemplates } from './adventureTemplates';

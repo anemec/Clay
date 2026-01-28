@@ -26,6 +26,18 @@ function bindUI(gameInstance: MerchantRPG) {
             case 'craftItem':
                 gameInstance.craftItem(Number(target.dataset.recipeId));
                 break;
+            case 'sellItem':
+                gameInstance.sellItem(Number(target.dataset.itemId));
+                break;
+            case 'buyShopItem':
+                gameInstance.buyShopItem(Number(target.dataset.shopItemId));
+                break;
+            case 'startAdventureForm':
+                gameInstance.startAdventureFromForm(Number(target.dataset.adventureId));
+                break;
+            case 'tickAdventure':
+                gameInstance.tickAdventure();
+                break;
             case 'hireHero':
             case 'save':
             case 'reset':

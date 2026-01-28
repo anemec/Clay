@@ -33,6 +33,14 @@
                 <span class="tab-icon">🗺️</span>
                 <span class="tab-label">Quests</span>
             </button>
+            <button class="tab" data-action="switchTab" data-tab="adventure">
+                <span class="tab-icon">🧭</span>
+                <span class="tab-label">Adventure</span>
+            </button>
+            <button class="tab" data-action="switchTab" data-tab="inventory">
+                <span class="tab-icon">🎒</span>
+                <span class="tab-label">Inventory</span>
+            </button>
             <button class="tab" data-action="switchTab" data-tab="equipment">
                 <span class="tab-icon">🧰</span>
                 <span class="tab-label">Equipment</span>
@@ -40,6 +48,10 @@
             <button class="tab" data-action="switchTab" data-tab="crafting">
                 <span class="tab-icon">🛠️</span>
                 <span class="tab-label">Crafting</span>
+            </button>
+            <button class="tab" data-action="switchTab" data-tab="shop">
+                <span class="tab-icon">🛒</span>
+                <span class="tab-label">Shop</span>
             </button>
             <button class="tab" data-action="switchTab" data-tab="materials">
                 <span class="tab-icon">📦</span>
@@ -100,6 +112,23 @@
                 </div>
             </section>
 
+            <!-- Adventure Tab -->
+            <section id="adventure-tab" class="tab-content">
+                <div id="adventure-status"></div>
+                <div class="panel">
+                    <h2 class="panel-title">Available Adventures</h2>
+                    <div id="adventure-list" class="adventure-list"></div>
+                </div>
+            </section>
+
+            <!-- Inventory Tab -->
+            <section id="inventory-tab" class="tab-content">
+                <div class="panel">
+                    <h2 class="panel-title">Inventory</h2>
+                    <div id="inventory-list" class="inventory-list"></div>
+                </div>
+            </section>
+
             <!-- Equipment Tab -->
             <section id="equipment-tab" class="tab-content">
                 <div class="panel">
@@ -126,6 +155,14 @@
                 <div class="panel">
                     <h2 class="panel-title">Crafting Recipes</h2>
                     <div id="crafting-recipes" class="crafting-list"></div>
+                </div>
+            </section>
+
+            <!-- Shop Tab -->
+            <section id="shop-tab" class="tab-content">
+                <div class="panel">
+                    <h2 class="panel-title">Shop</h2>
+                    <div id="shop-list" class="shop-list"></div>
                 </div>
             </section>
 

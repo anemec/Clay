@@ -458,6 +458,103 @@ body {
     font-weight: bold;
 }
 
+/* === Inventory === */
+.inventory-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.inventory-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.inventory-value {
+    font-weight: bold;
+    color: var(--gold-color);
+}
+
+/* === Adventure === */
+.adventure-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.adventure-card {
+    background: var(--dark-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.adventure-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.adventure-title {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.adventure-goal {
+    background: var(--secondary-color);
+    padding: 0.2rem 0.6rem;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.adventure-meta {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.adventure-heroes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.adventure-hero {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.adventure-resources {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.adventure-resources input {
+    width: 100%;
+    margin-top: 0.25rem;
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    padding: 0.35rem 0.5rem;
+}
+
+.adventure-status {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
 /* === Equipment === */
 .equipment-slots {
     display: grid;
@@ -518,6 +615,44 @@ body {
 .inventory-stats {
     color: var(--text-secondary);
     font-size: 0.85rem;
+}
+
+/* === Shop === */
+.shop-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+}
+
+.shop-item {
+    background: var(--dark-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.shop-name {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.shop-meta {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+.shop-description {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.shop-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .hero-equipment {

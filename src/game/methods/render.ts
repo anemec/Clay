@@ -14,10 +14,16 @@ export const renderMethods = {
             this.renderParty();
         } else if (this.state.activeTab === 'quests') {
             this.renderQuests();
+        } else if (this.state.activeTab === 'adventure') {
+            this.renderAdventure();
+        } else if (this.state.activeTab === 'inventory') {
+            this.renderInventory();
         } else if (this.state.activeTab === 'equipment') {
             this.renderEquipment();
         } else if (this.state.activeTab === 'crafting') {
             this.renderCrafting();
+        } else if (this.state.activeTab === 'shop') {
+            this.renderShop();
         } else if (this.state.activeTab === 'materials') {
             this.renderMaterials();
         }
@@ -130,6 +136,91 @@ export const renderMethods = {
         questsListElement.innerHTML = questsHtml;
     },
 
+    renderInventory() {
+        const inventoryList = document.getElementById('inventory-list');
+        if (!inventoryList) return;
+
+        if (!this.state.inventory || this.state.inventory.length === 0) {
+            inventoryList.innerHTML = '<div class="empty-state">No items in inventory yet.</div>';
+            return;
+        }
+
+        const inventoryHtml = this.state.inventory.map(item => {
+            return `
+                <div class="inventory-item">
+                    <div class="inventory-name">${item.name}</div>
+                    <div class="inventory-meta">${item.rarity} • ${item.type} • Lv.${item.level}</div>
+                    <div class="inventory-stats">${this.formatItemStats(item)}</div>
+                    <div class="inventory-actions">
+                        <span class="inventory-value">💰 ${item.value}g</span>
+                        <button class="btn btn-secondary" data-action="sellItem" data-item-id="${item.id}">Sell</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        inventoryList.innerHTML = inventoryHtml;
+    },
+
+    renderAdventure() {
+        const adventureList = document.getElementById('adventure-list');
+        const adventureStatus = document.getElementById('adventure-status');
+        if (!adventureList || !adventureStatus) return;
+
+        const heroes = this.state.heroes || [];
+
+        if (this.state.adventure?.active) {
+            const activeAdventure = this.adventureTemplates.find(a => a.id === this.state.adventure.adventureId);
+            adventureStatus.innerHTML = `
+                <div class="panel">
+                    <h2 class="panel-title">Adventure In Progress</h2>
+                    <div class="adventure-status">
+                        <div><strong>${activeAdventure?.name || 'Unknown Adventure'}</strong></div>
+                        <div>Tick ${this.state.adventure.tick} / ${this.state.adventure.ticksToGoal}</div>
+                        <div>Last Event: ${this.state.adventure.lastEvent || 'None'}</div>
+                        <div>Supplies: 🧪 ${this.state.adventure.resources.potions} • 🍖 ${this.state.adventure.resources.food} • 💰 ${this.state.adventure.resources.gold}</div>
+                    </div>
+                    <button class="btn btn-secondary" data-action="tickAdventure">Advance Tick</button>
+                </div>
+            `;
+        } else {
+            const outcome = this.state.adventure?.outcome ? `Last outcome: ${this.state.adventure.outcome}` : 'No adventure active.';
+            adventureStatus.innerHTML = `<div class="panel"><div class="panel-title">Status</div><div>${outcome}</div></div>`;
+        }
+
+        if (heroes.length === 0) {
+            adventureList.innerHTML = '<div class="empty-state">Hire heroes to start an adventure.</div>';
+            return;
+        }
+
+        adventureList.innerHTML = this.adventureTemplates.map(adventure => {
+            return `
+                <div class="adventure-card">
+                    <div class="adventure-header">
+                        <div class="adventure-title">${adventure.name}</div>
+                        <div class="adventure-goal">${adventure.goalType}</div>
+                    </div>
+                    <div class="adventure-meta">Goal in ${adventure.ticksToGoal} ticks • Difficulty ${adventure.difficulty}</div>
+                    <div class="adventure-heroes">
+                        ${heroes.map(hero => `
+                            <label class="adventure-hero">
+                                <input type="checkbox" data-adventure-id="${adventure.id}" data-adventure-hero="${hero.id}">
+                                ${hero.name} (Lv.${hero.level})
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div class="adventure-resources">
+                        <label>Potions <input type="number" min="0" value="0" data-adventure-resource="potions" data-adventure-id="${adventure.id}"></label>
+                        <label>Food <input type="number" min="0" value="0" data-adventure-resource="food" data-adventure-id="${adventure.id}"></label>
+                        <label>Gold <input type="number" min="0" value="0" data-adventure-resource="gold" data-adventure-id="${adventure.id}"></label>
+                        <label>Risk <input type="number" min="0" max="1" step="0.05" value="0.4" data-adventure-resource="risk" data-adventure-id="${adventure.id}"></label>
+                    </div>
+                    <button class="btn btn-primary" data-action="startAdventureForm" data-adventure-id="${adventure.id}">Start Adventure</button>
+                </div>
+            `;
+        }).join('');
+    },
+
     renderEquipment() {
         const heroSelect = document.getElementById('equipment-hero-select') as HTMLSelectElement | null;
         const equippedList = document.getElementById('equipment-slots');
@@ -240,6 +331,27 @@ export const renderMethods = {
         }).join('');
     },
 
+    renderShop() {
+        const shopList = document.getElementById('shop-list');
+        if (!shopList) return;
+
+        shopList.innerHTML = this.shopItems.map(item => {
+            const canBuy = this.state.gold >= item.price;
+
+            return `
+                <div class="shop-item">
+                    <div class="shop-name">${item.name}</div>
+                    <div class="shop-meta">${item.rarity} • ${item.type} • Lv.${item.level}</div>
+                    <div class="shop-description">${item.description}</div>
+                    <div class="shop-actions">
+                        <span class="inventory-value">💰 ${item.price}g</span>
+                        <button class="btn btn-primary" data-action="buyShopItem" data-shop-item-id="${item.id}" ${canBuy ? '' : 'disabled'}>Buy</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    },
+
     renderMaterials() {
         const materialsListElement = document.getElementById('materials-list');
         if (!materialsListElement) return;
@@ -265,7 +377,9 @@ export const renderMethods = {
         materialsListElement.innerHTML = materialsHtml;
     },
     formatItemStats(item) {
-        if (!item || !item.stats) return 'No stats';
+        if (!item) return 'No stats';
+        if (item.type === 'potion' || item.type === 'food') return 'Consumable';
+        if (!item.stats) return 'No stats';
         const parts = [];
         if (item.stats.attack) parts.push(`ATK +${item.stats.attack}`);
         if (item.stats.defense) parts.push(`DEF +${item.stats.defense}`);

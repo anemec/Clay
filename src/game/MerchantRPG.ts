@@ -10,7 +10,9 @@ import {
     itemTypes,
     lootTables,
     battlePartyGrid,
-    craftingRecipes
+    craftingRecipes,
+    shopItems,
+    adventureTemplates
 } from '../data/index';
 
 import {
@@ -30,6 +32,8 @@ import { utilsMethods } from './methods/utils';
 import { persistenceMethods } from './methods/persistence';
 import { loopMethods } from './methods/loop';
 import { equipmentMethods } from './methods/equipment';
+import { inventoryMethods } from './methods/inventory';
+import { adventureMethods } from './methods/adventure';
 
 class MerchantRPG {
     skipInit: boolean;
@@ -41,6 +45,8 @@ class MerchantRPG {
     lootTables: unknown;
     battlePartyGrid: unknown;
     craftingRecipes: Array<Record<string, unknown>>;
+    shopItems: Array<Record<string, unknown>>;
+    adventureTemplates: Array<Record<string, unknown>>;
     expPerLevelMultiplier: number;
     nextItemId: number;
     state: Record<string, unknown>;
@@ -65,6 +71,11 @@ class MerchantRPG {
     declare unequipItem: (slot: string, heroId: number, options?: { silent?: boolean }) => void;
     declare craftItem: (recipeId: number) => void;
     declare selectEquipmentHero: (heroId: number) => void;
+    declare sellItem: (itemId: number) => void;
+    declare buyShopItem: (shopItemId: number) => void;
+    declare startAdventure: (options: { adventureId: number; heroIds: number[]; resources: { potions?: number; food?: number; gold?: number }; riskTolerance?: number }) => void;
+    declare tickAdventure: () => void;
+    declare startAdventureFromForm: (adventureId: number) => void;
 
     constructor(options: { skipInit?: boolean } = {}) {
         // Options for testing
@@ -79,6 +90,8 @@ class MerchantRPG {
         this.lootTables = lootTables;
         this.battlePartyGrid = battlePartyGrid;
         this.craftingRecipes = craftingRecipes;
+        this.shopItems = shopItems;
+        this.adventureTemplates = adventureTemplates;
 
         this.expPerLevelMultiplier = EXP_PER_LEVEL_MULTIPLIER;
         this.nextItemId = 1; // For unique item IDs
@@ -91,6 +104,18 @@ class MerchantRPG {
             nextHeroId: 1,
             activeTab: 'heroes',
             selectedEquipmentHeroId: null,
+            adventure: {
+                active: false,
+                adventureId: null,
+                partyHeroIds: [],
+                resources: { potions: 0, food: 0, gold: 0 },
+                riskTolerance: 0.4,
+                tick: 0,
+                ticksToGoal: 0,
+                goalType: null,
+                outcome: null,
+                lastEvent: null
+            },
             unlockedClasses: [...UNLOCKED_CLASSES_DEFAULT], // Fighter, Wizard, Rogue start unlocked
             battleParty: {
                 positions: [
@@ -132,7 +157,9 @@ Object.assign(
     utilsMethods,
     persistenceMethods,
     loopMethods,
-    equipmentMethods
+    equipmentMethods,
+    inventoryMethods,
+    adventureMethods
 );
 
 export { MerchantRPG };
