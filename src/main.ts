@@ -26,6 +26,9 @@ function bindUI(gameInstance: MerchantRPG) {
             case 'craftItem':
                 gameInstance.craftItem(Number(target.dataset.recipeId));
                 break;
+            case 'refineMaterial':
+                gameInstance.refineMaterial(Number(target.dataset.recipeId));
+                break;
             case 'sellItem':
                 gameInstance.sellItem(Number(target.dataset.itemId));
                 break;

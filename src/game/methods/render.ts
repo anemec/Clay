@@ -330,7 +330,45 @@ export const renderMethods = {
 
     renderCrafting() {
         const recipesList = document.getElementById('crafting-recipes');
-        if (!recipesList) return;
+        const refiningList = document.getElementById('refining-recipes');
+        if (!recipesList || !refiningList) return;
+
+        refiningList.innerHTML = this.refiningRecipes.map(recipe => {
+            const inputs = Object.entries(recipe.inputs || {}).map(([material, amount]) => {
+                const owned = this.state.materials[material] || 0;
+                const isEnough = owned >= amount;
+                return `<span class="material-tag ${isEnough ? '' : 'material-missing'}">${material} ×${amount}</span>`;
+            }).join('');
+
+            const outputs = Object.entries(recipe.outputs || {}).map(([material, amount]) => {
+                return `<span class="material-tag">${material} ×${amount}</span>`;
+            }).join('');
+
+            const canRefine = Object.entries(recipe.inputs || {}).every(([material, amount]) => {
+                return (this.state.materials[material] || 0) >= amount;
+            });
+
+            return `
+                <div class="crafting-card">
+                    <div class="crafting-header">
+                        <div class="crafting-title">${recipe.name}</div>
+                        <div class="crafting-level">Refine</div>
+                    </div>
+                    <div class="crafting-description">${recipe.description}</div>
+                    <div class="crafting-rewards">
+                        <span class="reward">Inputs</span>
+                        <span class="reward">Outputs</span>
+                    </div>
+                    <div class="quest-materials-preview">
+                        ${inputs}
+                    </div>
+                    <div class="quest-materials-preview">
+                        ${outputs}
+                    </div>
+                    <button class="btn btn-secondary" data-action="refineMaterial" data-recipe-id="${recipe.id}" ${canRefine ? '' : 'disabled'}>Refine</button>
+                </div>
+            `;
+        }).join('');
 
         recipesList.innerHTML = this.craftingRecipes.map(recipe => {
             const materials = Object.entries(recipe.materials || {}).map(([material, amount]) => {
@@ -347,13 +385,13 @@ export const renderMethods = {
                 <div class="crafting-card">
                     <div class="crafting-header">
                         <div class="crafting-title">${recipe.name}</div>
-                        <div class="crafting-level">Lv.${recipe.level}</div>
+                        <div class="crafting-level">Tier ${recipe.tier || 1}</div>
                     </div>
                     <div class="crafting-description">${recipe.description}</div>
                     <div class="crafting-rewards">
                         <span class="reward">⚔️ ${recipe.type}</span>
                         <span class="reward">${this.formatItemStats(recipe)}</span>
-                        <span class="reward">💰 ${recipe.value}g</span>
+                        <span class="reward">💰 ${Math.round((recipe.value || 0) * this.getCraftingTierMultiplier(recipe.tier || 1))}g</span>
                     </div>
                     <div class="quest-materials-preview">
                         ${materials}
@@ -413,9 +451,12 @@ export const renderMethods = {
         if (!item) return 'No stats';
         if (item.type === 'potion' || item.type === 'food') return 'Consumable';
         if (!item.stats) return 'No stats';
+        const tierMultiplier = this.getCraftingTierMultiplier ? this.getCraftingTierMultiplier(item.tier || 1) : 1;
+        const attack = Math.round((item.stats.attack || 0) * tierMultiplier);
+        const defense = Math.round((item.stats.defense || 0) * tierMultiplier);
         const parts = [];
-        if (item.stats.attack) parts.push(`ATK +${item.stats.attack}`);
-        if (item.stats.defense) parts.push(`DEF +${item.stats.defense}`);
+        if (attack) parts.push(`ATK +${attack}`);
+        if (defense) parts.push(`DEF +${defense}`);
         return parts.length ? parts.join(' • ') : 'No stats';
     }
 };

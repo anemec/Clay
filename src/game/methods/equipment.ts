@@ -73,18 +73,53 @@ export const equipmentMethods = {
             this.state.materials[material] -= amount;
         });
 
+        const tierMultiplier = this.getCraftingTierMultiplier(recipe.tier || 1);
+        const scaledStats = this.scaleItemStats(recipe.stats || {}, tierMultiplier);
+        const scaledValue = Math.round((recipe.value || 0) * tierMultiplier);
+
         const item = {
             id: this.nextItemId++,
             name: recipe.name,
             type: recipe.type,
             rarity: recipe.rarity,
             level: recipe.level,
-            value: recipe.value,
-            stats: recipe.stats,
+            value: scaledValue,
+            stats: scaledStats,
             description: recipe.description
         };
 
         this.state.inventory.push(item);
+        this.save();
+        this.render();
+    },
+
+    refineMaterial(recipeId) {
+        const recipe = this.refiningRecipes.find(r => r.id === recipeId);
+        if (!recipe) return;
+
+        const inputs = Object.entries(recipe.inputs || {}) as [string, number][];
+        const outputs = Object.entries(recipe.outputs || {}) as [string, number][];
+
+        const canRefine = inputs.every(([material, amount]) => {
+            return (this.state.materials[material] || 0) >= amount;
+        });
+
+        if (!canRefine) {
+            alert('Not enough materials to refine.');
+            return;
+        }
+
+        inputs.forEach(([material, amount]) => {
+            this.state.materials[material] -= amount;
+        });
+
+        outputs.forEach(([material, amount]) => {
+            if (!this.state.materials[material]) {
+                this.state.materials[material] = 0;
+            }
+            this.state.materials[material] += amount;
+        });
+
         this.save();
         this.render();
     },
@@ -96,5 +131,22 @@ export const equipmentMethods = {
 
         hero.atk += attack * direction;
         hero.def += defense * direction;
+    },
+
+    getCraftingTierMultiplier(tier) {
+        const multipliers = {
+            1: 1.0,
+            2: 1.3,
+            3: 1.6
+        };
+        return multipliers[tier] || 1.0;
+    },
+
+    scaleItemStats(stats, multiplier: number) {
+        const scaled = {};
+        (Object.entries(stats) as [string, number][]).forEach(([key, value]) => {
+            scaled[key] = Math.round((value || 0) * multiplier);
+        });
+        return scaled;
     }
 };

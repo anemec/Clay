@@ -11,6 +11,7 @@ import {
     lootTables,
     battlePartyGrid,
     craftingRecipes,
+    refiningRecipes,
     shopItems,
     adventureTemplates
 } from '../data/index';
@@ -47,6 +48,7 @@ class MerchantRPG {
     craftingRecipes: Array<Record<string, unknown>>;
     shopItems: Array<Record<string, unknown>>;
     adventureTemplates: Array<Record<string, unknown>>;
+    refiningRecipes: Array<Record<string, unknown>>;
     expPerLevelMultiplier: number;
     nextItemId: number;
     state: Record<string, unknown>;
@@ -77,6 +79,7 @@ class MerchantRPG {
     declare tickAdventure: () => void;
     declare startAdventureFromForm: (adventureId: number) => void;
     declare setAdventureLogFilter: (filter: string, enabled: boolean) => void;
+    declare refineMaterial: (recipeId: number) => void;
 
     constructor(options: { skipInit?: boolean } = {}) {
         // Options for testing
@@ -91,6 +94,7 @@ class MerchantRPG {
         this.lootTables = lootTables;
         this.battlePartyGrid = battlePartyGrid;
         this.craftingRecipes = craftingRecipes;
+        this.refiningRecipes = refiningRecipes;
         this.shopItems = shopItems;
         this.adventureTemplates = adventureTemplates;
 
