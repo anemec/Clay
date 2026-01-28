@@ -88,7 +88,14 @@ export const adventureMethods = {
                     type: 'status',
                     message: `Adventure started: ${adventure.name} (Goal: ${adventure.goalType}).`
                 }
-            ]
+            ],
+            logFilters: this.state.adventure?.logFilters || {
+                battle: true,
+                encounter: true,
+                opportunity: true,
+                resource: true,
+                status: true
+            }
         };
 
         this.save();
@@ -313,6 +320,22 @@ export const adventureMethods = {
         if (adventureState.log.length > 50) {
             adventureState.log.shift();
         }
+    },
+
+    setAdventureLogFilter(filter, enabled) {
+        if (!this.state.adventure) return;
+        if (!this.state.adventure.logFilters) {
+            this.state.adventure.logFilters = {
+                battle: true,
+                encounter: true,
+                opportunity: true,
+                resource: true,
+                status: true
+            };
+        }
+        this.state.adventure.logFilters[filter] = enabled;
+        this.save();
+        this.render();
     },
 
     takeInventoryItems(type, count) {

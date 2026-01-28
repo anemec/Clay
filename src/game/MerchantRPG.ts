@@ -76,6 +76,7 @@ class MerchantRPG {
     declare startAdventure: (options: { adventureId: number; heroIds: number[]; resources: { potions?: number; food?: number; gold?: number }; riskTolerance?: number }) => void;
     declare tickAdventure: () => void;
     declare startAdventureFromForm: (adventureId: number) => void;
+    declare setAdventureLogFilter: (filter: string, enabled: boolean) => void;
 
     constructor(options: { skipInit?: boolean } = {}) {
         // Options for testing
@@ -115,7 +116,14 @@ class MerchantRPG {
                 goalType: null,
                 outcome: null,
                 lastEvent: null,
-                log: []
+                log: [],
+                logFilters: {
+                    battle: true,
+                    encounter: true,
+                    opportunity: true,
+                    resource: true,
+                    status: true
+                }
             },
             unlockedClasses: [...UNLOCKED_CLASSES_DEFAULT], // Fighter, Wizard, Rogue start unlocked
             battleParty: {

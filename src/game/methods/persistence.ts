@@ -43,7 +43,14 @@ export const persistenceMethods = {
                         goalType: null,
                         outcome: null,
                         lastEvent: null,
-                        log: []
+                        log: [],
+                        logFilters: {
+                            battle: true,
+                            encounter: true,
+                            opportunity: true,
+                            resource: true,
+                            status: true
+                        }
                     };
                 } else if (!this.state.adventure.log) {
                     this.state.adventure.log = [];
@@ -52,6 +59,16 @@ export const persistenceMethods = {
                         type: 'status',
                         message
                     }));
+                }
+
+                if (!this.state.adventure.logFilters) {
+                    this.state.adventure.logFilters = {
+                        battle: true,
+                        encounter: true,
+                        opportunity: true,
+                        resource: true,
+                        status: true
+                    };
                 }
             }
         } catch (e) {

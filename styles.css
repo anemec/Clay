@@ -570,6 +570,28 @@ body {
     color: var(--text-secondary);
 }
 
+.adventure-log-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.adventure-log-filters label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.adventure-log-chip {
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    font-size: 0.75rem;
+}
+
 .adventure-log-battle {
     border-color: rgba(255, 99, 71, 0.5);
     color: #ffb6a1;

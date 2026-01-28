@@ -64,6 +64,11 @@ function bindUI(gameInstance: MerchantRPG) {
                 gameInstance.selectEquipmentHero(Number(select.value));
                 break;
             }
+            case 'filterAdventureLog': {
+                const input = target as HTMLInputElement;
+                gameInstance.setAdventureLogFilter(input.dataset.filter ?? 'status', input.checked);
+                break;
+            }
             default:
                 break;
         }

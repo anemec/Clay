@@ -189,12 +189,20 @@ export const renderMethods = {
             adventureStatus.innerHTML = `<div class="panel"><div class="panel-title">Status</div><div>${outcome}</div></div>`;
         }
 
+        const legend = `
+            <div class="adventure-log-filters">
+                <label><input type="checkbox" data-action="filterAdventureLog" data-filter="battle" ${logFilters.battle ? 'checked' : ''}> <span class="adventure-log-chip adventure-log-battle">Battle</span></label>
+                <label><input type="checkbox" data-action="filterAdventureLog" data-filter="encounter" ${logFilters.encounter ? 'checked' : ''}> <span class="adventure-log-chip adventure-log-encounter">Encounter</span></label>
+                <label><input type="checkbox" data-action="filterAdventureLog" data-filter="opportunity" ${logFilters.opportunity ? 'checked' : ''}> <span class="adventure-log-chip adventure-log-opportunity">Opportunity</span></label>
+                <label><input type="checkbox" data-action="filterAdventureLog" data-filter="resource" ${logFilters.resource ? 'checked' : ''}> <span class="adventure-log-chip adventure-log-resource">Resource</span></label>
+                <label><input type="checkbox" data-action="filterAdventureLog" data-filter="status" ${logFilters.status ? 'checked' : ''}> <span class="adventure-log-chip adventure-log-status">Status</span></label>
+            </div>
+        `;
+
         if (heroes.length === 0) {
             adventureList.innerHTML = '<div class="empty-state">Hire heroes to start an adventure.</div>';
-            return;
-        }
-
-        adventureList.innerHTML = this.adventureTemplates.map(adventure => {
+        } else {
+            adventureList.innerHTML = this.adventureTemplates.map(adventure => {
             return `
                 <div class="adventure-card">
                     <div class="adventure-header">
@@ -219,16 +227,30 @@ export const renderMethods = {
                     <button class="btn btn-primary" data-action="startAdventureForm" data-adventure-id="${adventure.id}">Start Adventure</button>
                 </div>
             `;
-        }).join('');
+            }).join('');
+        }
 
         const logEntries = this.state.adventure?.log || [];
+        const logFilters = this.state.adventure?.logFilters || {
+            battle: true,
+            encounter: true,
+            opportunity: true,
+            resource: true,
+            status: true
+        };
         if (logEntries.length === 0) {
-            adventureLog.innerHTML = '<div class="empty-state">No adventure log entries yet.</div>';
+            adventureLog.innerHTML = `${legend}<div class="empty-state">No adventure log entries yet.</div>`;
         } else {
-            adventureLog.innerHTML = logEntries.slice().reverse().map(entry => {
+            const filtered = logEntries.filter(entry => logFilters[entry.type ?? 'status'] !== false);
+            if (filtered.length === 0) {
+                adventureLog.innerHTML = `${legend}<div class="empty-state">No log entries match the current filters.</div>`;
+                return;
+            }
+
+            adventureLog.innerHTML = `${legend}${filtered.slice().reverse().map(entry => {
                 const type = entry.type || 'status';
                 return `<div class="adventure-log-entry ${`adventure-log-${type}`}">${entry.message}</div>`;
-            }).join('');
+            }).join('')}`;
         }
     },
 
